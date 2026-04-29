@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 12 · Performance Monitoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+
+    --success: #10a37f;
+    --success-soft: #d1fae5;
+    --warning: #f59e0b;
+    --warning-soft: #fef3c7;
+    --danger:  #d12d6b;
+    --danger-soft: #ffe4ee;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 12px rgba(16, 163, 127, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.85rem, 4.2vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.55rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .col-title .live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--success);
+    background: var(--success-soft);
+    border: 1px solid rgba(16,163,127,0.35);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .col-title .live-pill .ld {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  /* ---------- Body grid ---------- */
+  .body {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 1.3rem;
+    align-items: stretch;
+  }
+  @media (max-width: 1100px) { .body { grid-template-columns: 1fr; } }
+
+  /* ---------- Latency dashboard (left) ---------- */
+  .latency-panel {
+    padding: 1rem 1.1rem 1rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  /* Table header */
+  .lh-row {
+    display: grid;
+    grid-template-columns: 1.1fr 0.55fr 1.4fr 0.5fr;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--purple-500);
+  }
+  .lh-row > div:nth-child(2),
+  .lh-row > div:nth-child(4) { text-align: right; }
+
+  /* Endpoint row */
+  .ep-row {
+    display: grid;
+    grid-template-columns: 1.1fr 0.55fr 1.4fr 0.5fr;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.55rem 0.45rem;
+    border-radius: 12px;
+    background: rgba(245, 243, 255, 0.6);
+    border: 1px solid rgba(106, 47, 214, 0.1);
+    transition: transform 0.4s ease, background 0.4s ease;
+  }
+  .ep-row:hover { transform: translateX(2px); background: rgba(245, 243, 255, 0.95); }
+
+  .ep-name {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  .ep-name .ep-route {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .ep-name .ep-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.66rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .ep-method {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    background: var(--purple-100);
+    color: var(--ink-soft);
+    text-align: center;
+    letter-spacing: 0.08em;
+    width: fit-content;
+    margin: 0 0 0 auto;
+  }
+  .ep-method.post { background: rgba(16,163,127,0.14); color: var(--success); }
+  .ep-method.get  { background: var(--purple-100); color: var(--ink-soft); }
+
+  /* Bars: P50, P95, P99 stacked indicators */
+  .bars {
+    position: relative;
+    height: 32px;
+    background: var(--purple-50);
+    border-radius: 8px;
+    overflow: visible;
+    border: 1px solid rgba(106, 47, 214, 0.08);
+  }
+  /* SLO threshold marker (vertical dashed) */
+  .bars::after {
+    content: "";
+    position: absolute;
+    top: -4px; bottom: -4px;
+    width: 0;
+    border-left: 2px dashed rgba(209, 45, 107, 0.5);
+    left: var(--slo, 70%);
+    pointer-events: none;
+  }
+  .bar {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-radius: 8px;
+    transform-origin: left center;
+    animation: bar-grow 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .bar.p50 {
+    background: linear-gradient(90deg, rgba(167,139,250,0.6), rgba(167,139,250,0.85));
+    height: 32px;
+    z-index: 1;
+  }
+  .bar.p95 {
+    background: linear-gradient(90deg, #6a2fd6, #8b5cf6);
+    height: 18px;
+    top: 7px;
+    z-index: 2;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.6);
+  }
+  .bar.p99 {
+    background: linear-gradient(90deg, #2d0b5a, #4b1d99);
+    height: 8px;
+    top: 12px;
+    z-index: 3;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.7);
+  }
+  @keyframes bar-grow {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+  }
+
+  .ep-status {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+  }
+  .ep-status .sd {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(16,163,127,0.65);
+  }
+  .ep-status.warn { color: var(--warning); }
+  .ep-status.warn .sd { background: var(--warning); box-shadow: 0 0 8px rgba(245,158,11,0.65); }
+
+  /* Bar legend */
+  .bar-legend {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0.6rem 0;
+    border-top: 1px dashed rgba(106, 47, 214, 0.18);
+    margin-top: 0.3rem;
+    flex-wrap: wrap;
+  }
+  .bl-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+  .bl-swatch {
+    width: 18px; height: 8px; border-radius: 3px;
+  }
+  .bl-swatch.p50 { background: linear-gradient(90deg, rgba(167,139,250,0.6), rgba(167,139,250,0.95)); }
+  .bl-swatch.p95 { background: linear-gradient(90deg, #6a2fd6, #8b5cf6); }
+  .bl-swatch.p99 { background: linear-gradient(90deg, #2d0b5a, #4b1d99); }
+  .bl-swatch.slo { width: 0; height: 14px; border-left: 2px dashed rgba(209, 45, 107, 0.7); }
+
+  /* ---------- Right column ---------- */
+  .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  /* QA Pyramid */
+  .pyramid-card {
+    padding: 0.95rem 1.05rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+  }
+  .pyramid {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    margin-top: 0.25rem;
+  }
+  .pyr-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+  }
+  .pyr-tier {
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: -0.01em;
+    box-shadow: 0 6px 16px -8px rgba(75, 29, 153, 0.5);
+    transform-origin: center;
+    animation: tier-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes tier-rise {
+    from { opacity: 0; transform: translateY(10px) scaleY(0.6); }
+    to   { opacity: 1; transform: translateY(0) scaleY(1); }
+  }
+  .pyr-tier.t1 { width: 100%;  background: linear-gradient(90deg, #8b5cf6, #c4b5fd);  color: var(--ink); }
+  .pyr-tier.t2 { width: 78%;   background: linear-gradient(90deg, #6a2fd6, #a78bfa); }
+  .pyr-tier.t3 { width: 56%;   background: linear-gradient(90deg, #4b1d99, #8b5cf6); }
+  .pyr-tier.t4 { width: 34%;   background: linear-gradient(90deg, #2d0b5a, #6a2fd6); }
+
+  .pyr-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .pyr-meta .pm-count {
+    color: var(--ink);
+    font-size: 0.78rem;
+  }
+  .pyr-meta .pm-tool {
+    display: block;
+    font-size: 0.62rem;
+    color: var(--purple-500);
+    margin-top: 0.1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .pyr-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.15rem;
+  }
+  .pyr-sub {
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin-bottom: 0.4rem;
+  }
+
+  /* Resilience policy card */
+  .policy-card {
+    padding: 0.95rem 1.05rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+  }
+  .policy-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.1rem;
+  }
+  .policy-sub {
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin-bottom: 0.5rem;
+  }
+  .policy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .policy-item {
+    padding: 0.55rem 0.65rem;
+    border-radius: 10px;
+    background: var(--purple-50);
+    border: 1px solid rgba(106, 47, 214, 0.12);
+  }
+  .policy-item .pk {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--purple-500);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .policy-item .pv {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 0.15rem;
+    letter-spacing: -0.005em;
+  }
+  .policy-item .pd {
+    font-size: 0.66rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+
+  /* Health band */
+  .health-band {
+    margin-top: 0.3rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.7rem;
+  }
+  .health-band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .health-band > * { position: relative; }
+  @media (max-width: 700px) { .health-band { grid-template-columns: repeat(2, 1fr); } }
+
+  .metric .mv {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .metric .ml {
+    margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    color: rgba(255,255,255,0.78);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .metric + .metric {
+    border-left: 1px solid rgba(255,255,255,0.15);
+    padding-left: 0.7rem;
+  }
+  @media (max-width: 700px) { .metric + .metric { border-left: none; padding-left: 0; } }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.82s; }
+  .slide.active .d8 { animation-delay: 0.94s; }
+  .slide.active .d9 { animation-delay: 1.06s; }
+  .slide.active .d10{ animation-delay: 1.18s; }
+  .slide.active .d11{ animation-delay: 1.30s; }
+
+  /* Bar grow staggered to match d1..d8 */
+  .slide.active .ep-row:nth-child(2) .bar { animation-delay: 0.55s; }
+  .slide.active .ep-row:nth-child(3) .bar { animation-delay: 0.65s; }
+  .slide.active .ep-row:nth-child(4) .bar { animation-delay: 0.75s; }
+  .slide.active .ep-row:nth-child(5) .bar { animation-delay: 0.85s; }
+  .slide.active .ep-row:nth-child(6) .bar { animation-delay: 0.95s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">12</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 12 — Performance Monitoring -->
+    <section class="slide active" data-slide="12">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Performance Monitoring · 11
+        </span>
+
+        <h1 class="reveal d2">Observability, Resilience, and a <span class="accent">QA Pyramid That Holds Up Under Load</span></h1>
+
+        <p class="lead reveal d3">
+          Every AI endpoint is instrumented for <strong>P50/P95/P99 latency</strong>, error budgets, and timeout
+          enforcement. <code style="font-family:'JetBrains Mono',monospace;font-size:0.86em;color:var(--ink)">AiMonitoringService.cs</code>
+          collects per-route metrics; load and integration scripts validate behavior before each release.
+        </p>
+
+        <div class="body">
+          <!-- LEFT: Latency dashboard -->
+          <div>
+            <div class="col-title reveal d4">
+              Live Latency · per endpoint
+              <span class="live-pill"><span class="ld"></span> live · last 5 min</span>
+            </div>
+
+            <div class="latency-panel reveal-up d4">
+              <div class="lh-row">
+                <div>Route</div>
+                <div>Method</div>
+                <div>P50 · P95 · P99</div>
+                <div>Status</div>
+              </div>
+
+              <!-- /ai/chat (SSE) -->
+              <div class="ep-row">
+                <div class="ep-name">
+                  <span class="ep-route">/ai/chat</span>
+                  <span class="ep-tag">streaming · first-token TTFT</span>
+                </div>
+                <div class="ep-method post">POST</div>
+                <div class="bars" style="--slo: 70%;">
+                  <span class="bar p50" style="left:0; width:24%;"></span>
+                  <span class="bar p95" style="left:0; width:55%;"></span>
+                  <span class="bar p99" style="left:0; width:68%;"></span>
+                </div>
+                <div class="ep-status"><span class="sd"></span>OK</div>
+              </div>
+
+              <!-- /sentiment -->
+              <div class="ep-row">
+                <div class="ep-name">
+                  <span class="ep-route">/sentiment</span>
+                  <span class="ep-tag">VADER · CPU only</span>
+                </div>
+                <div class="ep-method post">POST</div>
+                <div class="bars" style="--slo: 80%;">
+                  <span class="bar p50" style="left:0; width:14%;"></span>
+                  <span class="bar p95" style="left:0; width:38%;"></span>
+                  <span class="bar p99" style="left:0; width:52%;"></span>
+                </div>
+                <div class="ep-status"><span class="sd"></span>OK</div>
+              </div>
+
+              <!-- /emotion -->
+              <div class="ep-row">
+                <div class="ep-name">
+                  <span class="ep-route">/emotion</span>
+                  <span class="ep-tag">DistilRoBERTa · 5-class</span>
+                </div>
+                <div class="ep-method post">POST</div>
+                <div class="bars" style="--slo: 80%;">
+                  <span class="bar p50" style="left:0; width:32%;"></span>
+                  <span class="bar p95" style="left:0; width:62%;"></span>
+                  <span class="bar p99" style="left:0; width:74%;"></span>
+                </div>
+                <div class="ep-status"><span class="sd"></span>OK</div>
+              </div>
+
+              <!-- /quiz -->
+              <div class="ep-row">
+                <div class="ep-name">
+                  <span class="ep-route">/quiz</span>
+                  <span class="ep-tag">IRT 1PL · re-targeting</span>
+                </div>
+                <div class="ep-method post">POST</div>
+                <div class="bars" style="--slo: 75%;">
+                  <span class="bar p50" style="left:0; width:28%;"></span>
+                  <span class="bar p95" style="left:0; width:60%;"></span>
+                  <span class="bar p99" style="left:0; width:71%;"></span>
+                </div>
+                <div class="ep-status"><span class="sd"></span>OK</div>
+              </div>
+
+              <!-- /summary -->
+              <div class="ep-row">
+                <div class="ep-name">
+                  <span class="ep-route">/summary</span>
+                  <span class="ep-tag">module summarizer</span>
+                </div>
+                <div class="ep-method post">POST</div>
+                <div class="bars" style="--slo: 85%;">
+                  <span class="bar p50" style="left:0; width:36%;"></span>
+                  <span class="bar p95" style="left:0; width:70%;"></span>
+                  <span class="bar p99" style="left:0; width:83%;"></span>
+                </div>
+                <div class="ep-status warn"><span class="sd"></span>WATCH</div>
+              </div>
+
+              <div class="bar-legend">
+                <span class="bl-item"><span class="bl-swatch p50"></span>P50</span>
+                <span class="bl-item"><span class="bl-swatch p95"></span>P95</span>
+                <span class="bl-item"><span class="bl-swatch p99"></span>P99</span>
+                <span class="bl-item"><span class="bl-swatch slo"></span>SLO threshold</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: QA pyramid + resilience policy -->
+          <div class="right-col">
+            <div>
+              <div class="col-title reveal d5">QA Pyramid · what catches regressions</div>
+
+              <div class="pyramid-card reveal-up d5">
+                <div class="pyr-title">Layered testing strategy</div>
+                <div class="pyr-sub">Cheap, fast tests run constantly; slow E2E checks gate releases.</div>
+
+                <div class="pyramid">
+                  <div class="pyr-row">
+                    <div class="pyr-tier t1">Unit tests</div>
+                    <div class="pyr-meta">
+                      <span class="pm-count">~ 480</span>
+                      <span class="pm-tool">xUnit · pytest</span>
+                    </div>
+                  </div>
+                  <div class="pyr-row">
+                    <div class="pyr-tier t2">Integration tests</div>
+                    <div class="pyr-meta">
+                      <span class="pm-count">~ 95</span>
+                      <span class="pm-tool">integration_*.ps1</span>
+                    </div>
+                  </div>
+                  <div class="pyr-row">
+                    <div class="pyr-tier t3">Load tests</div>
+                    <div class="pyr-meta">
+                      <span class="pm-count">~ 12 scenarios</span>
+                      <span class="pm-tool">ai_load_test.ps1</span>
+                    </div>
+                  </div>
+                  <div class="pyr-row">
+                    <div class="pyr-tier t4">E2E smoke</div>
+                    <div class="pyr-meta">
+                      <span class="pm-count">~ 8 flows</span>
+                      <span class="pm-tool">Playwright</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="col-title reveal d7">Resilience policy · what happens on failure</div>
+
+              <div class="policy-card reveal-up d7">
+                <div class="policy-title">Timeouts &amp; retries</div>
+                <div class="policy-sub">Configured in <code style="font-family:'JetBrains Mono',monospace;font-size:0.86em">AiServiceSettings</code>; enforced by HTTP client + Polly.</div>
+
+                <div class="policy-grid">
+                  <div class="policy-item">
+                    <div class="pk">HTTP timeout</div>
+                    <div class="pv">8 s</div>
+                    <div class="pd">non-streaming AI calls</div>
+                  </div>
+                  <div class="policy-item">
+                    <div class="pk">SSE deadline</div>
+                    <div class="pv">30 s</div>
+                    <div class="pd">/ai/chat token stream</div>
+                  </div>
+                  <div class="policy-item">
+                    <div class="pk">Retry (Polly)</div>
+                    <div class="pv">3× exp. backoff</div>
+                    <div class="pd">200 ms · 600 ms · 1.8 s</div>
+                  </div>
+                  <div class="policy-item">
+                    <div class="pk">Circuit breaker</div>
+                    <div class="pv">5 fails / 30 s</div>
+                    <div class="pd">opens 60 s · auto-probe</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production health band -->
+        <div class="health-band reveal-up d11">
+          <div class="metric">
+            <div class="mv">99.7 %</div>
+            <div class="ml">Uptime · 30 d</div>
+          </div>
+          <div class="metric">
+            <div class="mv">&lt; 0.4 %</div>
+            <div class="ml">Error rate · AI routes</div>
+          </div>
+          <div class="metric">
+            <div class="mv">&lt; 400 ms</div>
+            <div class="ml">TTFT · /ai/chat P95</div>
+          </div>
+          <div class="metric">
+            <div class="mv">&lt; 180 ms</div>
+            <div class="ml">P95 · /sentiment · /emotion</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide11.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>12</strong> / 18</div>
+    <a href="Slide13.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

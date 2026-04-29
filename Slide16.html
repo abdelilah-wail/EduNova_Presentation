@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 16 · Projected Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --neutral-500: #6b7280;
+    --neutral-400: #9ca3af;
+    --neutral-300: #d1d5db;
+    --neutral-100: #f3f4f6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+
+    --success: #10a37f;
+    --success-soft: #d1fae5;
+    --danger:  #d12d6b;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 12px rgba(16, 163, 127, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.85rem, 4.2vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.55rem;
+  }
+
+  /* ---------- Body grid ---------- */
+  .body {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 1.3rem;
+    align-items: stretch;
+  }
+  @media (max-width: 1100px) { .body { grid-template-columns: 1fr; } }
+
+  /* ---------- Hero stat cards (left) ---------- */
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .hstat {
+    position: relative;
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.45s ease,
+                box-shadow 0.45s ease;
+  }
+  .hstat::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(360px 220px at 100% 0%, rgba(167,139,250,0.18), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hstat > * { position: relative; z-index: 1; }
+  .hstat:hover {
+    transform: translateY(-3px);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+
+  /* SVG ring */
+  .ring-wrap {
+    width: 96px; height: 96px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ring-wrap svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .ring-bg {
+    fill: none;
+    stroke: rgba(106, 47, 214, 0.1);
+    stroke-width: 9;
+  }
+  .ring-fg {
+    fill: none;
+    stroke-width: 9;
+    stroke-linecap: round;
+    stroke-dasharray: 251.327; /* 2π·40 */
+    animation: ring-draw 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .ring-fg.r1 { stroke: url(#gradPink);   --pct: 0.35; }
+  .ring-fg.r2 { stroke: url(#gradPurple); --pct: 0.28; }
+  .ring-fg.r3 { stroke: url(#gradPurple2);--pct: 0.22; }
+
+  @keyframes ring-draw {
+    from { stroke-dashoffset: 251.327; }
+    to   { stroke-dashoffset: calc(251.327 - 251.327 * var(--pct)); }
+  }
+
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .ring-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .ring-value.down { color: var(--danger); }
+  .ring-value.up   { color: var(--ink-soft); }
+  .ring-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--purple-500);
+    margin-top: 0.15rem;
+    letter-spacing: 0.1em;
+  }
+
+  .hstat-text .ht-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin-bottom: 0.22rem;
+  }
+  .hstat-text .ht-desc {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .hstat-text .ht-desc strong { color: var(--ink); font-weight: 700; }
+
+  .hstat-baseline {
+    text-align: right;
+    padding-left: 0.7rem;
+    border-left: 1px dashed rgba(106, 47, 214, 0.2);
+    flex-shrink: 0;
+  }
+  .hstat-baseline .bl-k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--neutral-500);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hstat-baseline .bl-v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--neutral-500);
+    margin-top: 0.1rem;
+    letter-spacing: -0.01em;
+  }
+  .hstat-baseline .bl-arrow {
+    margin: 0.25rem 0;
+    color: var(--purple-500);
+    font-size: 0.8rem;
+  }
+  .hstat-baseline .bl-target-k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--purple-500);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hstat-baseline .bl-target-v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 0.1rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Comparison chart (right) ---------- */
+  .chart-card {
+    padding: 1rem 1.1rem 0.95rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .chart-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+  }
+  .chart-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 0.7rem;
+  }
+  .leg-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .leg-swatch {
+    width: 14px; height: 8px; border-radius: 2px;
+  }
+  .leg-swatch.base { background: var(--neutral-300); }
+  .leg-swatch.proj { background: linear-gradient(90deg, #6a2fd6, #a78bfa); }
+
+  .chart-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .crow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .crow-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .crow-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .crow-delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--success);
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    background: var(--success-soft);
+    border: 1px solid rgba(16,163,127,0.25);
+    letter-spacing: -0.005em;
+  }
+  .crow-delta.down {
+    color: var(--danger);
+    background: #ffe4ee;
+    border-color: rgba(209, 45, 107, 0.25);
+  }
+
+  .crow-bars {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cbar {
+    height: 14px;
+    border-radius: 7px;
+    position: relative;
+    overflow: visible;
+  }
+  .cbar-fill {
+    height: 100%;
+    border-radius: 7px;
+    transform-origin: left center;
+    animation: bar-grow 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .cbar.base .cbar-fill {
+    background: linear-gradient(90deg, var(--neutral-300), var(--neutral-400));
+  }
+  .cbar.proj .cbar-fill {
+    background: linear-gradient(90deg, #4b1d99, #a78bfa);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.35);
+  }
+  .cbar-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .cbar.base .cbar-label { color: var(--ink); text-shadow: none; }
+
+  @keyframes bar-grow {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+  }
+
+  /* Methodology note */
+  .method {
+    margin-top: 0.7rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 10px;
+    background: var(--purple-50);
+    border: 1px solid rgba(106, 47, 214, 0.15);
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .method .micon {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    color: var(--purple-500);
+    margin-top: 1px;
+  }
+  .method .micon svg { width: 100%; height: 100%; }
+  .method strong { color: var(--ink); font-weight: 700; }
+
+  /* ---------- Footer band ---------- */
+  .footer-band {
+    margin-top: 0.4rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr repeat(3, auto);
+    gap: 0.9rem;
+    align-items: center;
+  }
+  .footer-band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .footer-band > * { position: relative; }
+
+  .fb-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .fb-icon svg { width: 22px; height: 22px; }
+
+  .fb-text .fb-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .fb-text .fb-sub {
+    margin-top: 0.18rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.45;
+  }
+
+  .fb-stat {
+    text-align: right;
+    padding-left: 0.85rem;
+    border-left: 1px solid rgba(255,255,255,0.18);
+  }
+  .fb-stat .fs-v {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .fb-stat .fs-l {
+    margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.78);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.82s; }
+  .slide.active .d8 { animation-delay: 0.94s; }
+  .slide.active .d9 { animation-delay: 1.06s; }
+  .slide.active .d10{ animation-delay: 1.20s; }
+
+  /* Bar grow stagger */
+  .slide.active .crow:nth-child(1) .cbar-fill { animation-delay: 0.55s; }
+  .slide.active .crow:nth-child(2) .cbar-fill { animation-delay: 0.65s; }
+  .slide.active .crow:nth-child(3) .cbar-fill { animation-delay: 0.75s; }
+  .slide.active .crow:nth-child(4) .cbar-fill { animation-delay: 0.85s; }
+
+  /* Ring draw stagger */
+  .slide.active .hstat:nth-child(1) .ring-fg { animation-delay: 0.55s; }
+  .slide.active .hstat:nth-child(2) .ring-fg { animation-delay: 0.70s; }
+  .slide.active .hstat:nth-child(3) .ring-fg { animation-delay: 0.85s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">16</strong> / <span id="total">18</span></div>
+
+    <!-- SVG gradients (shared) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="gradPink" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#d12d6b"/>
+          <stop offset="100%" stop-color="#f43f7a"/>
+        </linearGradient>
+        <linearGradient id="gradPurple" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#4b1d99"/>
+          <stop offset="100%" stop-color="#8b5cf6"/>
+        </linearGradient>
+        <linearGradient id="gradPurple2" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#6a2fd6"/>
+          <stop offset="100%" stop-color="#a78bfa"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <!-- Slide 16 — Projected Results -->
+    <section class="slide active" data-slide="16">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Projected Results · 15
+        </span>
+
+        <h1 class="reveal d2">From the Same Cohorts, We Project <span class="accent">Materially Better Learning Outcomes</span></h1>
+
+        <p class="lead reveal d3">
+          Modeled against the <strong>&lt; 13% completion / &gt; 90% dropout</strong> baseline established
+          in Slide 02, EduNova's closed-loop personalization is projected to deliver three headline
+          shifts during the pilot semester at the Department of New Technologies.
+        </p>
+
+        <div class="body">
+          <!-- LEFT: 3 hero stat cards -->
+          <div>
+            <div class="col-title reveal d4">Headline Projections · 1-semester pilot</div>
+
+            <div class="hero-stats">
+              <!-- Stat 1: Dropout reduction -->
+              <article class="hstat reveal-up d4">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                    <circle class="ring-fg r1" cx="50" cy="50" r="40"/>
+                  </svg>
+                  <div class="ring-center">
+                    <span class="ring-value down">−35%</span>
+                    <span class="ring-unit">DROPOUT</span>
+                  </div>
+                </div>
+                <div class="hstat-text">
+                  <div class="ht-label">Lower dropout rate</div>
+                  <div class="ht-desc">Predictive risk scoring + early instructor alerts at <strong>r ≥ 0.70</strong> intervene before disengagement compounds.</div>
+                </div>
+                <div class="hstat-baseline">
+                  <div class="bl-k">Baseline</div>
+                  <div class="bl-v">~ 90%</div>
+                  <div class="bl-arrow">↓</div>
+                  <div class="bl-target-k">Projected</div>
+                  <div class="bl-target-v">~ 58%</div>
+                </div>
+              </article>
+
+              <!-- Stat 2: Completion uplift -->
+              <article class="hstat reveal-up d5">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                    <circle class="ring-fg r2" cx="50" cy="50" r="40"/>
+                  </svg>
+                  <div class="ring-center">
+                    <span class="ring-value up">+28%</span>
+                    <span class="ring-unit">COMPLETION</span>
+                  </div>
+                </div>
+                <div class="hstat-text">
+                  <div class="ht-label">Higher course completion</div>
+                  <div class="ht-desc">ZPD-targeted quizzes (<strong>P ∈ [0.5, 0.75]</strong>) and adaptive scaffolding keep more learners moving through every module.</div>
+                </div>
+                <div class="hstat-baseline">
+                  <div class="bl-k">Baseline</div>
+                  <div class="bl-v">~ 13%</div>
+                  <div class="bl-arrow">↑</div>
+                  <div class="bl-target-k">Projected</div>
+                  <div class="bl-target-v">~ 41%</div>
+                </div>
+              </article>
+
+              <!-- Stat 3: Engagement uplift -->
+              <article class="hstat reveal-up d6">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                    <circle class="ring-fg r3" cx="50" cy="50" r="40"/>
+                  </svg>
+                  <div class="ring-center">
+                    <span class="ring-value up">+22%</span>
+                    <span class="ring-unit">ENGAGEMENT</span>
+                  </div>
+                </div>
+                <div class="hstat-text">
+                  <div class="ht-label">Stronger weekly engagement</div>
+                  <div class="ht-desc">Tone adapts to <strong>5 emotion classes</strong> in real time — frustration is met with softer scaffolding, confidence with stretch challenges.</div>
+                </div>
+                <div class="hstat-baseline">
+                  <div class="bl-k">Sessions / wk</div>
+                  <div class="bl-v">2.1</div>
+                  <div class="bl-arrow">↑</div>
+                  <div class="bl-target-k">Projected</div>
+                  <div class="bl-target-v">2.6</div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- RIGHT: Comparison chart -->
+          <div>
+            <div class="col-title reveal d7">Supporting Metrics · baseline vs projected</div>
+
+            <div class="chart-card reveal-up d7">
+              <div class="chart-head">
+                <div class="chart-title">Per-learner outcomes</div>
+                <div class="chart-legend">
+                  <span class="leg-item"><span class="leg-swatch base"></span>Baseline</span>
+                  <span class="leg-item"><span class="leg-swatch proj"></span>Projected</span>
+                </div>
+              </div>
+
+              <div class="chart-rows">
+                <!-- Quiz pass rate -->
+                <div class="crow">
+                  <div class="crow-head">
+                    <span class="crow-name">Quiz pass rate · first attempt</span>
+                    <span class="crow-delta">+19 pp</span>
+                  </div>
+                  <div class="crow-bars">
+                    <div class="cbar base">
+                      <div class="cbar-fill" style="width:42%;">
+                        <span class="cbar-label">42%</span>
+                      </div>
+                    </div>
+                    <div class="cbar proj">
+                      <div class="cbar-fill" style="width:61%;">
+                        <span class="cbar-label">61%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Time to mastery -->
+                <div class="crow">
+                  <div class="crow-head">
+                    <span class="crow-name">Time-to-mastery · per module</span>
+                    <span class="crow-delta down">−24%</span>
+                  </div>
+                  <div class="crow-bars">
+                    <div class="cbar base">
+                      <div class="cbar-fill" style="width:78%;">
+                        <span class="cbar-label">5.4 h</span>
+                      </div>
+                    </div>
+                    <div class="cbar proj">
+                      <div class="cbar-fill" style="width:59%;">
+                        <span class="cbar-label">4.1 h</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Return rate -->
+                <div class="crow">
+                  <div class="crow-head">
+                    <span class="crow-name">Weekly return rate</span>
+                    <span class="crow-delta">+31%</span>
+                  </div>
+                  <div class="crow-bars">
+                    <div class="cbar base">
+                      <div class="cbar-fill" style="width:48%;">
+                        <span class="cbar-label">48%</span>
+                      </div>
+                    </div>
+                    <div class="cbar proj">
+                      <div class="cbar-fill" style="width:79%;">
+                        <span class="cbar-label">79%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Self-reported satisfaction -->
+                <div class="crow">
+                  <div class="crow-head">
+                    <span class="crow-name">Self-reported satisfaction · 1–5</span>
+                    <span class="crow-delta">+1.4</span>
+                  </div>
+                  <div class="crow-bars">
+                    <div class="cbar base">
+                      <div class="cbar-fill" style="width:56%;">
+                        <span class="cbar-label">2.8 / 5</span>
+                      </div>
+                    </div>
+                    <div class="cbar proj">
+                      <div class="cbar-fill" style="width:84%;">
+                        <span class="cbar-label">4.2 / 5</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="method">
+                <span class="micon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8"  x2="12.01" y2="8"/>
+                  </svg>
+                </span>
+                <span><strong>Methodology.</strong> Projections derived from prior IRT and dropout-prediction literature applied to the department's historical cohort (~210 first-year learners), held-out simulation, and internal load-test telemetry. Pilot will validate 95% CI bands on every metric.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer band -->
+        <div class="footer-band reveal-up d10">
+          <span class="fb-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+          </span>
+          <div class="fb-text">
+            <div class="fb-title">Three headline shifts · four supporting metrics · one closed-loop system</div>
+            <div class="fb-sub">All gains are achievable with the architecture already shipped — no model swap required during the pilot.</div>
+          </div>
+          <div class="fb-stat">
+            <div class="fs-v">~ 210</div>
+            <div class="fs-l">Pilot learners</div>
+          </div>
+          <div class="fb-stat">
+            <div class="fs-v">1 sem.</div>
+            <div class="fs-l">Pilot horizon</div>
+          </div>
+          <div class="fb-stat">
+            <div class="fs-v">95%</div>
+            <div class="fs-l">CI target</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide15.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>16</strong> / 18</div>
+    <a href="Slide17.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

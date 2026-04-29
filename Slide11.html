@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 11 · Content Personalization Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6a2fd6;
+    box-shadow: 0 0 12px rgba(106, 47, 214, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.85rem, 4.2vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.6rem;
+  }
+
+  /* ---------- Body grid ---------- */
+  .body {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.4rem;
+    align-items: stretch;
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 1100px) { .body { grid-template-columns: 1fr; } }
+
+  /* ---------- Loop diagram (left) ---------- */
+  .loop-panel {
+    position: relative;
+    padding: 1.1rem 1.1rem 1rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    overflow: hidden;
+  }
+  .loop-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Phase chip colors keyed via CSS so SVG and chips can mirror */
+  .phase-chip {
+    fill: white;
+    stroke: rgba(106, 47, 214, 0.25);
+    stroke-width: 1.5;
+  }
+  .phase-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    fill: #2d0b5a;
+  }
+  .phase-sub {
+    font-family: 'JetBrains Mono', monospace;
+    fill: #6a2fd6;
+    font-weight: 600;
+  }
+  .phase-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    fill: white;
+  }
+
+  /* Animated dashed orbit */
+  .orbit-path {
+    fill: none;
+    stroke: rgba(106, 47, 214, 0.35);
+    stroke-width: 2;
+    stroke-dasharray: 6 6;
+    animation: orbit-spin 18s linear infinite;
+  }
+  @keyframes orbit-spin {
+    to { stroke-dashoffset: -240; }
+  }
+
+  /* Traveling pulse along the loop */
+  .traveler {
+    fill: #a78bfa;
+    filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.95));
+  }
+
+  /* Center "Learner" badge */
+  .center-glow {
+    fill: url(#centerGrad);
+    filter: drop-shadow(0 0 24px rgba(139, 92, 246, 0.5));
+  }
+  .center-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    fill: white;
+    letter-spacing: -0.01em;
+  }
+  .center-sub {
+    font-family: 'JetBrains Mono', monospace;
+    fill: rgba(255, 255, 255, 0.78);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  /* Phase legend below diagram */
+  .phase-legend {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+  @media (max-width: 700px) { .phase-legend { grid-template-columns: repeat(2, 1fr); } }
+
+  .pl-item {
+    padding: 0.55rem 0.65rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--glass-border);
+    text-align: center;
+  }
+  .pl-num {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(75, 29, 153, 0.4);
+    margin-bottom: 0.3rem;
+  }
+  .pl-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .pl-desc {
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+
+  /* ---------- Right column: levers + cycle latency ---------- */
+  .levers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .lever {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.4s ease, border-color 0.4s ease;
+  }
+  .lever:hover {
+    transform: translateX(3px);
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+  .lever .lic {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    box-shadow: 0 8px 18px rgba(75, 29, 153, 0.4),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .lever .lic svg { width: 20px; height: 20px; }
+  .lever .ltext { min-width: 0; }
+  .lever .ltitle {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .lever .ldesc {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    line-height: 1.45;
+  }
+  .lever .lbadge {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(106, 47, 214, 0.08);
+    border: 1px solid rgba(106, 47, 214, 0.18);
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+
+  /* Cycle metrics band */
+  .cycle-band {
+    margin-top: 0.4rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.7rem;
+  }
+  .cycle-band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .cycle-band > * { position: relative; }
+  @media (max-width: 700px) { .cycle-band { grid-template-columns: repeat(2, 1fr); } }
+
+  .metric .mv {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .metric .ml {
+    margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    color: rgba(255,255,255,0.78);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .metric + .metric {
+    border-left: 1px solid rgba(255,255,255,0.15);
+    padding-left: 0.7rem;
+  }
+  @media (max-width: 700px) { .metric + .metric { border-left: none; padding-left: 0; } }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.82s; }
+  .slide.active .d8 { animation-delay: 0.94s; }
+  .slide.active .d9 { animation-delay: 1.06s; }
+  .slide.active .d10{ animation-delay: 1.18s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">11</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 11 — Content Personalization Loop -->
+    <section class="slide active" data-slide="11">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Personalization Loop · 10
+        </span>
+
+        <h1 class="reveal d2">A Closed-Loop System That <span class="accent">Re-tunes Itself Every Cycle</span></h1>
+
+        <p class="lead reveal d3">
+          Every learner interaction feeds back into the next. Behavioral signals, affective scores,
+          IRT estimates, and dropout risk are merged on each cycle — adjusting <strong>tone</strong>,
+          <strong>difficulty</strong>, <strong>pacing</strong>, and <strong>scaffolding</strong>
+          before the next piece of content is delivered.
+        </p>
+
+        <div class="body">
+          <!-- LEFT: Loop diagram -->
+          <div>
+            <div class="col-title reveal d4">Continuous 4-Phase Cycle</div>
+
+            <div class="loop-panel reveal-up d4">
+              <svg class="loop-svg" viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg" aria-label="Personalization feedback loop">
+                <defs>
+                  <linearGradient id="centerGrad" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%"   stop-color="#4b1d99"/>
+                    <stop offset="100%" stop-color="#a78bfa"/>
+                  </linearGradient>
+                  <linearGradient id="phaseGrad1" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%"   stop-color="#6a2fd6"/>
+                    <stop offset="100%" stop-color="#a78bfa"/>
+                  </linearGradient>
+                  <linearGradient id="phaseGrad2" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%"   stop-color="#4b1d99"/>
+                    <stop offset="100%" stop-color="#8b5cf6"/>
+                  </linearGradient>
+                  <linearGradient id="phaseGrad3" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%"   stop-color="#6a2fd6"/>
+                    <stop offset="100%" stop-color="#c4b5fd"/>
+                  </linearGradient>
+                  <linearGradient id="phaseGrad4" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%"   stop-color="#4b1d99"/>
+                    <stop offset="100%" stop-color="#a78bfa"/>
+                  </linearGradient>
+                  <marker id="arrowHead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#6a2fd6"/>
+                  </marker>
+                </defs>
+
+                <!-- Outer dashed orbit -->
+                <circle class="orbit-path" cx="260" cy="230" r="180"/>
+
+                <!-- Curved connector arcs between phases (clockwise: top → right → bottom → left → top) -->
+                <!-- 1 → 2 -->
+                <path d="M 360 130 A 180 180 0 0 1 440 230" fill="none" stroke="#6a2fd6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrowHead)" opacity="0.85"/>
+                <!-- 2 → 3 -->
+                <path d="M 440 230 A 180 180 0 0 1 360 330" fill="none" stroke="#6a2fd6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrowHead)" opacity="0.85"/>
+                <!-- 3 → 4 -->
+                <path d="M 160 330 A 180 180 0 0 1 80 230" fill="none" stroke="#6a2fd6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrowHead)" opacity="0.85"/>
+                <!-- 4 → 1 -->
+                <path d="M 80 230 A 180 180 0 0 1 160 130" fill="none" stroke="#6a2fd6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrowHead)" opacity="0.85"/>
+
+                <!-- Traveling pulse on the orbit (animated using SMIL) -->
+                <circle class="traveler" r="6">
+                  <animateMotion dur="6s" repeatCount="indefinite" rotate="auto"
+                    path="M 440 230 A 180 180 0 1 1 439.9 229.9 Z"/>
+                </circle>
+
+                <!-- ===== Center: Learner ===== -->
+                <circle class="center-glow" cx="260" cy="230" r="68"/>
+                <circle cx="260" cy="230" r="68" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+                <text class="center-text" x="260" y="222" text-anchor="middle" font-size="20">Learner</text>
+                <text class="center-sub" x="260" y="244" text-anchor="middle" font-size="10">θ · sentiment · risk</text>
+
+                <!-- ===== Phase 1: TOP — Observe ===== -->
+                <g>
+                  <rect class="phase-chip" x="260" y="50" width="200" height="100" rx="18" transform="translate(-100,0)"/>
+                  <circle cx="170" cy="78" r="15" fill="url(#phaseGrad1)" />
+                  <text class="phase-num" x="170" y="83" text-anchor="middle" font-size="14">1</text>
+                  <text class="phase-text" x="200" y="84" font-size="14">Observe</text>
+                  <text class="phase-sub" x="200" y="103" font-size="10">behavior + affect captured</text>
+                  <text class="phase-sub" x="200" y="121" font-size="9.5" fill="#4b1d99">clicks · dwell · turns · errors</text>
+                  <text class="phase-sub" x="200" y="138" font-size="9.5" fill="#4b1d99">sentiment · emotion</text>
+                </g>
+
+                <!-- ===== Phase 2: RIGHT — Analyze ===== -->
+                <g>
+                  <rect class="phase-chip" x="345" y="180" width="160" height="100" rx="18"/>
+                  <circle cx="362" cy="208" r="15" fill="url(#phaseGrad2)" />
+                  <text class="phase-num" x="362" y="213" text-anchor="middle" font-size="14">2</text>
+                  <text class="phase-text" x="385" y="214" font-size="14">Analyze</text>
+                  <text class="phase-sub" x="385" y="233" font-size="10">signals → scores</text>
+                  <text class="phase-sub" x="385" y="251" font-size="9.5" fill="#4b1d99">θ update · IRT</text>
+                  <text class="phase-sub" x="385" y="268" font-size="9.5" fill="#4b1d99">risk r · logistic</text>
+                </g>
+
+                <!-- ===== Phase 3: BOTTOM — Decide ===== -->
+                <g>
+                  <rect class="phase-chip" x="160" y="310" width="200" height="100" rx="18"/>
+                  <circle cx="180" cy="338" r="15" fill="url(#phaseGrad3)" />
+                  <text class="phase-num" x="180" y="343" text-anchor="middle" font-size="14">3</text>
+                  <text class="phase-text" x="205" y="344" font-size="14">Decide</text>
+                  <text class="phase-sub" x="205" y="363" font-size="10">policy chooses next move</text>
+                  <text class="phase-sub" x="205" y="381" font-size="9.5" fill="#4b1d99">tone · difficulty</text>
+                  <text class="phase-sub" x="205" y="398" font-size="9.5" fill="#4b1d99">pacing · scaffolding</text>
+                </g>
+
+                <!-- ===== Phase 4: LEFT — Adapt ===== -->
+                <g>
+                  <rect class="phase-chip" x="15" y="180" width="160" height="100" rx="18"/>
+                  <circle cx="32" cy="208" r="15" fill="url(#phaseGrad4)" />
+                  <text class="phase-num" x="32" y="213" text-anchor="middle" font-size="14">4</text>
+                  <text class="phase-text" x="55" y="214" font-size="14">Adapt</text>
+                  <text class="phase-sub" x="55" y="233" font-size="10">content delivered live</text>
+                  <text class="phase-sub" x="55" y="251" font-size="9.5" fill="#4b1d99">prompt re-injection</text>
+                  <text class="phase-sub" x="55" y="268" font-size="9.5" fill="#4b1d99">item re-selection</text>
+                </g>
+              </svg>
+
+              <div class="phase-legend">
+                <div class="pl-item">
+                  <span class="pl-num">1</span>
+                  <div class="pl-name">Observe</div>
+                  <div class="pl-desc">Capture clicks, dwell, errors, chat affect</div>
+                </div>
+                <div class="pl-item">
+                  <span class="pl-num">2</span>
+                  <div class="pl-name">Analyze</div>
+                  <div class="pl-desc">Update θ, sentiment, emotion, risk r</div>
+                </div>
+                <div class="pl-item">
+                  <span class="pl-num">3</span>
+                  <div class="pl-name">Decide</div>
+                  <div class="pl-desc">Pick tone, difficulty, pacing, scaffold</div>
+                </div>
+                <div class="pl-item">
+                  <span class="pl-num">4</span>
+                  <div class="pl-name">Adapt</div>
+                  <div class="pl-desc">Deliver re-tuned content immediately</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Adaptation levers -->
+          <div>
+            <div class="col-title reveal d5">Four Adaptation Levers · What Actually Changes</div>
+
+            <div class="levers">
+              <div class="lever reveal-up d5">
+                <span class="lic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </span>
+                <div class="ltext">
+                  <div class="ltitle">Tone</div>
+                  <div class="ldesc">Switches between <strong>concise</strong>, <strong>encouraging</strong>, or <strong>challenging</strong> based on emotion + sentiment.</div>
+                </div>
+                <span class="lbadge">prompt</span>
+              </div>
+
+              <div class="lever reveal-up d6">
+                <span class="lic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12h3l3-9 4 18 3-9h5"/>
+                  </svg>
+                </span>
+                <div class="ltext">
+                  <div class="ltitle">Difficulty</div>
+                  <div class="ldesc">IRT picks the next item targeting <strong>P ∈ [0.5, 0.75]</strong> — never too easy, never crushing.</div>
+                </div>
+                <span class="lbadge">b · IRT</span>
+              </div>
+
+              <div class="lever reveal-up d7">
+                <span class="lic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </span>
+                <div class="ltext">
+                  <div class="ltitle">Pacing</div>
+                  <div class="ldesc">Inserts breaks, slows progression, or accelerates depending on time-on-task and risk r.</div>
+                </div>
+                <span class="lbadge">scheduler</span>
+              </div>
+
+              <div class="lever reveal-up d8">
+                <span class="lic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="9" y1="13" x2="15" y2="13"/>
+                    <line x1="9" y1="17" x2="13" y2="17"/>
+                  </svg>
+                </span>
+                <div class="ltext">
+                  <div class="ltitle">Scaffolding</div>
+                  <div class="ldesc">Adds worked examples, hints, or simpler explanations when confused or frustrated is detected.</div>
+                </div>
+                <span class="lbadge">module slice</span>
+              </div>
+            </div>
+
+            <!-- Cycle metrics band -->
+            <div class="cycle-band reveal-up d10">
+              <div class="metric">
+                <div class="mv">~ 2 s</div>
+                <div class="ml">Cycle latency</div>
+              </div>
+              <div class="metric">
+                <div class="mv">∞</div>
+                <div class="ml">Cycles / session</div>
+              </div>
+              <div class="metric">
+                <div class="mv">10+</div>
+                <div class="ml">Signals fused</div>
+              </div>
+              <div class="metric">
+                <div class="mv">0 ms</div>
+                <div class="ml">Manual review</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide10.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>11</strong> / 18</div>
+    <a href="Slide12.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

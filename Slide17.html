@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 17 · Future Work & Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --neutral-500: #6b7280;
+    --neutral-400: #9ca3af;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+
+    --success: #10a37f;
+    --success-soft: #d1fae5;
+    --amber:   #f59e0b;
+    --amber-soft: #fef3c7;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6a2fd6;
+    box-shadow: 0 0 12px rgba(106, 47, 214, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.85rem, 4.2vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.55rem;
+  }
+
+  /* ---------- Body grid ---------- */
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 1.3rem;
+    align-items: stretch;
+  }
+  @media (max-width: 1100px) { .body { grid-template-columns: 1fr; } }
+
+  /* ---------- Roadmap (left) ---------- */
+  .roadmap {
+    position: relative;
+    padding: 1.05rem 1.1rem 0.95rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .road-track {
+    position: relative;
+    padding-left: 38px;
+  }
+  .road-track::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 14px; bottom: 14px;
+    width: 3px;
+    background: linear-gradient(180deg,
+      var(--success) 0%,
+      var(--success) 22%,
+      var(--purple-500) 35%,
+      var(--purple-600) 65%,
+      var(--purple-700) 100%);
+    border-radius: 3px;
+    opacity: 0.4;
+  }
+
+  .road-stage {
+    position: relative;
+    padding: 0.65rem 0.7rem 0.65rem 0.85rem;
+    border-radius: 14px;
+    background: rgba(245, 243, 255, 0.5);
+    border: 1px solid rgba(106, 47, 214, 0.12);
+    margin-bottom: 0.55rem;
+    transition: transform 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+  }
+  .road-stage:last-child { margin-bottom: 0; }
+  .road-stage:hover {
+    transform: translateX(3px);
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(245, 243, 255, 0.95);
+  }
+
+  /* Milestone marker */
+  .road-stage::before {
+    content: attr(data-letter);
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(75, 29, 153, 0.45),
+                0 0 0 4px rgba(255, 255, 255, 0.95);
+    z-index: 2;
+    letter-spacing: -0.01em;
+  }
+  .road-stage.shipped::before {
+    background: linear-gradient(135deg, var(--success), #34d399);
+    box-shadow: 0 6px 16px rgba(16, 163, 127, 0.5),
+                0 0 0 4px rgba(255, 255, 255, 0.95);
+  }
+  .road-stage.spotlight::before {
+    background: linear-gradient(135deg, #2d0b5a, #a78bfa);
+    box-shadow: 0 8px 22px rgba(75, 29, 153, 0.6),
+                0 0 0 4px rgba(255, 255, 255, 0.95),
+                0 0 24px rgba(167, 139, 250, 0.7);
+    animation: spotlight-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes spotlight-pulse {
+    0%, 100% { box-shadow: 0 8px 22px rgba(75, 29, 153, 0.6), 0 0 0 4px rgba(255, 255, 255, 0.95), 0 0 24px rgba(167, 139, 250, 0.7); }
+    50%      { box-shadow: 0 8px 22px rgba(75, 29, 153, 0.6), 0 0 0 4px rgba(255, 255, 255, 0.95), 0 0 36px rgba(167, 139, 250, 1); }
+  }
+
+  .rs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .rs-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .rs-when {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    background: var(--purple-100);
+    padding: 0.16rem 0.45rem;
+    border-radius: 5px;
+    border: 1px solid rgba(106, 47, 214, 0.18);
+    flex-shrink: 0;
+  }
+
+  .rs-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.14rem 0.45rem;
+    border-radius: 999px;
+    margin-bottom: 0.35rem;
+  }
+  .rs-status.shipped { color: var(--success); background: var(--success-soft); border: 1px solid rgba(16,163,127,0.3); }
+  .rs-status.next    { color: var(--amber);   background: var(--amber-soft);   border: 1px solid rgba(245,158,11,0.3); }
+  .rs-status.future  { color: var(--purple-600); background: var(--purple-100); border: 1px solid rgba(106,47,214,0.25); }
+  .rs-status.spot    { color: white; background: linear-gradient(135deg, #4b1d99, #8b5cf6); border: 1px solid rgba(139,92,246,0.5); }
+  .rs-status .sd {
+    width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+  }
+  .rs-status.spot .sd { background: white; }
+
+  .rs-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+  }
+  .rs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.13rem 0.45rem;
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: rgba(255,255,255,0.9);
+    color: var(--ink-soft);
+    border: 1px solid rgba(106, 47, 214, 0.18);
+    letter-spacing: -0.005em;
+  }
+  .rs-chip::before {
+    content: "▸";
+    color: var(--purple-500);
+    font-size: 0.66rem;
+  }
+
+  /* Spotlight stage tweaks */
+  .road-stage.spotlight {
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.07), rgba(167, 139, 250, 0.1));
+    border-color: rgba(139, 92, 246, 0.4);
+    border-left: 3px solid #8b5cf6;
+  }
+
+  /* ---------- Stage D spotlight (right) ---------- */
+  .kg-card {
+    padding: 1rem 1.1rem 0.95rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .kg-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .kg-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .kg-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .kg-svg {
+    width: 100%;
+    height: auto;
+    background: linear-gradient(135deg, var(--purple-50), rgba(255,255,255,0.5));
+    border: 1px solid rgba(106, 47, 214, 0.1);
+    border-radius: 14px;
+    padding: 0.5rem;
+    display: block;
+  }
+
+  /* KG node styles */
+  .kg-edge {
+    fill: none;
+    stroke-linecap: round;
+  }
+  .kg-edge.mastered { stroke: var(--success);   stroke-width: 2.5; opacity: 0.65; }
+  .kg-edge.active   { stroke: #8b5cf6;          stroke-width: 2.5; opacity: 0.8; stroke-dasharray: 4 4; animation: edge-flow 1.6s linear infinite; }
+  .kg-edge.future   { stroke: rgba(106,47,214,0.3); stroke-width: 1.8; stroke-dasharray: 3 4; }
+
+  @keyframes edge-flow {
+    to { stroke-dashoffset: -16; }
+  }
+
+  .kg-node-bg {
+    stroke-width: 2;
+  }
+  .kg-node-bg.mastered { fill: var(--success-soft); stroke: var(--success); }
+  .kg-node-bg.active   { fill: white; stroke: #8b5cf6; filter: drop-shadow(0 0 10px rgba(139,92,246,0.7)); }
+  .kg-node-bg.future   { fill: white; stroke: rgba(106,47,214,0.35); stroke-dasharray: 3 3; }
+
+  .kg-node-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-size: 9.5px;
+    fill: var(--ink);
+  }
+  .kg-node-label.future { fill: var(--ink-soft); }
+
+  .kg-node-mastery {
+    font-family: 'JetBrains Mono', monospace;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-size: 7.5px;
+    fill: var(--ink-soft);
+  }
+
+  /* KG legend */
+  .kg-legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .kg-leg {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .kg-leg-swatch {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid;
+  }
+  .kg-leg-swatch.mastered { background: var(--success-soft); border-color: var(--success); }
+  .kg-leg-swatch.active   { background: white; border-color: #8b5cf6; box-shadow: 0 0 6px rgba(139,92,246,0.6); }
+  .kg-leg-swatch.future   { background: white; border-color: rgba(106,47,214,0.35); border-style: dashed; }
+
+  /* KG description */
+  .kg-desc {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .kg-desc strong { color: var(--ink); font-weight: 700; }
+
+  /* KG mini-stats */
+  .kg-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+  }
+  .kgs {
+    padding: 0.5rem 0.6rem;
+    border-radius: 10px;
+    background: var(--purple-50);
+    border: 1px solid rgba(106, 47, 214, 0.12);
+    text-align: center;
+  }
+  .kgs-v {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .kgs-l {
+    margin-top: 0.18rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--purple-500);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Footer band ---------- */
+  .footer-band {
+    margin-top: 0.4rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .footer-band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .footer-band > * { position: relative; }
+
+  .fb-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .fb-icon svg { width: 22px; height: 22px; }
+
+  .fb-text .fb-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .fb-text .fb-sub {
+    margin-top: 0.18rem;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.45;
+  }
+
+  .fb-stat {
+    text-align: right;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.18);
+  }
+  .fb-stat .fs-v {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .fb-stat .fs-l {
+    margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.78);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.82s; }
+  .slide.active .d8 { animation-delay: 0.94s; }
+  .slide.active .d9 { animation-delay: 1.08s; }
+
+  .slide.active .road-stage {
+    animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .slide.active .road-stage:nth-child(1) { animation-delay: 0.50s; }
+  .slide.active .road-stage:nth-child(2) { animation-delay: 0.62s; }
+  .slide.active .road-stage:nth-child(3) { animation-delay: 0.74s; }
+  .slide.active .road-stage:nth-child(4) { animation-delay: 0.86s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">17</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 17 — Future Work & Roadmap -->
+    <section class="slide active" data-slide="17">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Future Work · 16
+        </span>
+
+        <h1 class="reveal d2">From a Closed Loop Today to a <span class="accent">Living Knowledge Graph Tomorrow</span></h1>
+
+        <p class="lead reveal d3">
+          The shipped alpha is Stage A. The roadmap to Stage D layers <strong>multi-modal affect</strong>,
+          <strong>peer-learning matchmaking</strong>, and ultimately a <strong>concept-level knowledge graph</strong>
+          that lets the system reason about prerequisites, gaps, and transfer across courses.
+        </p>
+
+        <div class="body">
+          <!-- LEFT: Roadmap timeline -->
+          <div>
+            <div class="col-title reveal d4">4-Stage Roadmap · 12-month horizon</div>
+
+            <div class="roadmap reveal-up d4">
+              <div class="road-track">
+                <!-- Stage A -->
+                <article class="road-stage shipped" data-letter="A">
+                  <div class="rs-head">
+                    <span class="rs-name">Closed-Loop Personalization</span>
+                    <span class="rs-when">Now · v1.0</span>
+                  </div>
+                  <span class="rs-status shipped"><span class="sd"></span>Shipped — alpha</span>
+                  <div class="rs-features">
+                    <span class="rs-chip">IRT 1PL</span>
+                    <span class="rs-chip">5-emotion affect</span>
+                    <span class="rs-chip">dropout-risk r</span>
+                    <span class="rs-chip">SSE chat</span>
+                  </div>
+                </article>
+
+                <!-- Stage B -->
+                <article class="road-stage" data-letter="B">
+                  <div class="rs-head">
+                    <span class="rs-name">Multi-modal Affect</span>
+                    <span class="rs-when">Q3 2026</span>
+                  </div>
+                  <span class="rs-status next"><span class="sd"></span>Next up</span>
+                  <div class="rs-features">
+                    <span class="rs-chip">opt-in voice tone</span>
+                    <span class="rs-chip">webcam micro-expressions</span>
+                    <span class="rs-chip">consent-gated</span>
+                    <span class="rs-chip">edge inference</span>
+                  </div>
+                </article>
+
+                <!-- Stage C -->
+                <article class="road-stage" data-letter="C">
+                  <div class="rs-head">
+                    <span class="rs-name">Peer-Learning Matchmaking</span>
+                    <span class="rs-when">Q4 2026</span>
+                  </div>
+                  <span class="rs-status future"><span class="sd"></span>Planned</span>
+                  <div class="rs-features">
+                    <span class="rs-chip">θ-similarity pairing</span>
+                    <span class="rs-chip">cohort study rooms</span>
+                    <span class="rs-chip">moderated chat</span>
+                  </div>
+                </article>
+
+                <!-- Stage D — spotlight -->
+                <article class="road-stage spotlight" data-letter="D">
+                  <div class="rs-head">
+                    <span class="rs-name">Knowledge Graph &amp; Cross-Course Transfer</span>
+                    <span class="rs-when">Q1 2027</span>
+                  </div>
+                  <span class="rs-status spot"><span class="sd"></span>Spotlight · big bet</span>
+                  <div class="rs-features">
+                    <span class="rs-chip">concept nodes</span>
+                    <span class="rs-chip">prerequisite edges</span>
+                    <span class="rs-chip">per-concept θ</span>
+                    <span class="rs-chip">gap finder</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Stage D spotlight -->
+          <div>
+            <div class="col-title reveal d7">Stage D · Knowledge Graph spotlight</div>
+
+            <div class="kg-card reveal-up d7">
+              <div class="kg-head">
+                <div class="kg-title">Concept-level mastery, not just module completion</div>
+                <span class="kg-tag">Stage D</span>
+              </div>
+
+              <p class="kg-desc">
+                Replace per-module θ with a <strong>per-concept θ</strong> attached to every node in a
+                directed graph of prerequisite relationships. The tutor can then surface
+                <strong>specific gaps</strong> ("you struggle with <em>backprop chain rule</em>, not <em>derivatives</em>")
+                and route content surgically.
+              </p>
+
+              <!-- KG SVG visualization -->
+              <svg class="kg-svg" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" aria-label="Knowledge graph preview">
+                <!-- Edges (drawn first so nodes overlay) -->
+                <!-- Mastered chain: derivatives → chain rule -->
+                <path class="kg-edge mastered" d="M 90 90 Q 150 90 200 90"/>
+                <!-- Mastered: derivatives → linearity -->
+                <path class="kg-edge mastered" d="M 90 90 Q 130 140 175 175"/>
+                <!-- Mastered: chain rule → activation -->
+                <path class="kg-edge mastered" d="M 200 90 Q 250 90 295 90"/>
+                <!-- Active: chain rule → backprop -->
+                <path class="kg-edge active" d="M 200 90 Q 250 130 295 175"/>
+                <!-- Active: linearity → backprop -->
+                <path class="kg-edge active" d="M 175 175 Q 235 175 295 175"/>
+                <!-- Future: backprop → optimization -->
+                <path class="kg-edge future" d="M 295 175 Q 360 175 420 130"/>
+                <!-- Future: activation → optimization -->
+                <path class="kg-edge future" d="M 295 90 Q 360 110 420 130"/>
+                <!-- Future: optimization → regularization -->
+                <path class="kg-edge future" d="M 420 130 Q 470 165 470 200"/>
+
+                <!-- Nodes -->
+                <!-- Derivatives (mastered) -->
+                <g>
+                  <circle class="kg-node-bg mastered" cx="60" cy="90" r="30"/>
+                  <text class="kg-node-label" x="60" y="86">Derivatives</text>
+                  <text class="kg-node-mastery" x="60" y="100">θ = 0.92</text>
+                </g>
+                <!-- Chain rule (mastered) -->
+                <g>
+                  <circle class="kg-node-bg mastered" cx="230" cy="90" r="30"/>
+                  <text class="kg-node-label" x="230" y="86">Chain rule</text>
+                  <text class="kg-node-mastery" x="230" y="100">θ = 0.81</text>
+                </g>
+                <!-- Linearity (mastered) -->
+                <g>
+                  <circle class="kg-node-bg mastered" cx="145" cy="190" r="30"/>
+                  <text class="kg-node-label" x="145" y="186">Linearity</text>
+                  <text class="kg-node-mastery" x="145" y="200">θ = 0.78</text>
+                </g>
+                <!-- Activation (mastered) -->
+                <g>
+                  <circle class="kg-node-bg mastered" cx="325" cy="90" r="30"/>
+                  <text class="kg-node-label" x="325" y="86">Activation</text>
+                  <text class="kg-node-mastery" x="325" y="100">θ = 0.74</text>
+                </g>
+                <!-- Backprop (active — current focus) -->
+                <g>
+                  <circle class="kg-node-bg active" cx="325" cy="190" r="32"/>
+                  <text class="kg-node-label" x="325" y="186">Backprop</text>
+                  <text class="kg-node-mastery" x="325" y="200">θ = 0.42</text>
+                </g>
+                <!-- Optimization (future) -->
+                <g>
+                  <circle class="kg-node-bg future" cx="450" cy="130" r="28"/>
+                  <text class="kg-node-label future" x="450" y="126">Optimizers</text>
+                  <text class="kg-node-mastery" x="450" y="138">θ = ?</text>
+                </g>
+                <!-- Regularization (future) -->
+                <g>
+                  <circle class="kg-node-bg future" cx="470" cy="220" r="26"/>
+                  <text class="kg-node-label future" x="470" y="216">Regulariz.</text>
+                  <text class="kg-node-mastery" x="470" y="228">θ = ?</text>
+                </g>
+              </svg>
+
+              <div class="kg-legend">
+                <span class="kg-leg"><span class="kg-leg-swatch mastered"></span>Mastered (θ ≥ 0.7)</span>
+                <span class="kg-leg"><span class="kg-leg-swatch active"></span>Current focus</span>
+                <span class="kg-leg"><span class="kg-leg-swatch future"></span>Locked · prerequisites pending</span>
+              </div>
+
+              <div class="kg-stats">
+                <div class="kgs">
+                  <div class="kgs-v">~ 1.2k</div>
+                  <div class="kgs-l">Concepts · target</div>
+                </div>
+                <div class="kgs">
+                  <div class="kgs-v">~ 4.5k</div>
+                  <div class="kgs-l">Prereq edges</div>
+                </div>
+                <div class="kgs">
+                  <div class="kgs-v">θ / node</div>
+                  <div class="kgs-l">Per-concept IRT</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer band -->
+        <div class="footer-band reveal-up d9">
+          <span class="fb-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6"  cy="6"  r="3"/>
+              <circle cx="18" cy="6"  r="3"/>
+              <circle cx="6"  cy="18" r="3"/>
+              <circle cx="18" cy="18" r="3"/>
+              <line x1="9" y1="6"  x2="15" y2="6"/>
+              <line x1="6" y1="9"  x2="6"  y2="15"/>
+              <line x1="18" y1="9" x2="18" y2="15"/>
+              <line x1="9" y1="18" x2="15" y2="18"/>
+            </svg>
+          </span>
+          <div class="fb-text">
+            <div class="fb-title">From a closed loop to a knowledge graph — same architecture, deeper reasoning</div>
+            <div class="fb-sub">Stages B and C are additive features on the existing pipeline. Stage D is the foundational shift: every signal we already collect becomes evidence about a specific concept node.</div>
+          </div>
+          <div class="fb-stat">
+            <div class="fs-v">12 mo</div>
+            <div class="fs-l">A → D horizon</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide16.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>17</strong> / 18</div>
+    <a href="Slide18.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

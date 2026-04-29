@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 2 · The Problem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --warning:    #d12d6b;
+    --warning-soft: #f43f7a;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+  }
+
+  /* Eyebrow with urgent pulse */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(209, 45, 107, 0.25);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--warning);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--warning);
+    box-shadow: 0 0 12px rgba(209, 45, 107, 0.7);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(2.4rem, 5.4vw, 4.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 880px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  /* Big stat cards */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: 0.4rem;
+  }
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: 1fr; }
+  }
+
+  .stat {
+    position: relative;
+    padding: 1.6rem 1.5rem 1.5rem;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(245, 243, 255, 0.85));
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .stat::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--warning), var(--warning-soft));
+    opacity: 0.85;
+  }
+  .stat:hover { transform: translateY(-6px) scale(1.01); }
+
+  .stat .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(209, 45, 107, 0.08);
+    border: 1px solid rgba(209, 45, 107, 0.22);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--warning);
+    margin-bottom: 0.9rem;
+  }
+  .stat .badge svg { width: 12px; height: 12px; }
+
+  .stat .value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.6rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(180deg, #4b1d99, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.03em;
+  }
+  .stat .label {
+    margin-top: 0.55rem;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .stat .source {
+    margin-top: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+  }
+
+  /* Root cause band */
+  .rootcause {
+    margin-top: 0.4rem;
+    padding: 1.1rem 1.4rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .rootcause .tag {
+    flex-shrink: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.7rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    color: white;
+    box-shadow: 0 6px 14px rgba(106, 47, 214, 0.35);
+  }
+  .rootcause .text {
+    font-size: 0.98rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .rootcause .text strong { color: var(--ink); font-weight: 700; }
+
+  /* Closing quote */
+  .closing {
+    margin-top: 0.4rem;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    font-weight: 500;
+    color: var(--ink);
+    font-style: italic;
+    border-left: 3px solid #8b5cf6;
+    padding-left: 1rem;
+    line-height: 1.5;
+    max-width: 880px;
+  }
+  .closing cite {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+  }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.60s; }
+  .slide.active .d6 { animation-delay: 0.78s; }
+  .slide.active .d7 { animation-delay: 0.95s; }
+  .slide.active .d8 { animation-delay: 1.10s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">02</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 2 — The Problem -->
+    <section class="slide active" data-slide="2">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> The Problem · 01
+        </span>
+
+        <h1 class="reveal d2">The Crisis in <span class="accent">Online Education</span></h1>
+
+        <p class="lead reveal d3">
+          Online learning reaches <strong>hundreds of millions of students</strong> worldwide —
+          yet behind the scale, the architecture is fundamentally broken. The same content,
+          the same pace, the same assessments are pushed to every learner, regardless of level,
+          history, or motivation.
+        </p>
+
+        <div class="stats">
+          <div class="stat reveal-up d4">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+              Completion
+            </span>
+            <div class="value">&lt; 13%</div>
+            <div class="label">MOOC course completion rate, globally</div>
+            <div class="source">Industry benchmark</div>
+          </div>
+
+          <div class="stat reveal-up d5">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Dropout
+            </span>
+            <div class="value">&gt; 90%</div>
+            <div class="label">Drop out before finishing on edX, Coursera and similar platforms</div>
+            <div class="source">Reported across MOOCs</div>
+          </div>
+
+          <div class="stat reveal-up d6">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Root cause
+            </span>
+            <div class="value">#1</div>
+            <div class="label">Cause of dropout: <strong>absence of individualized feedback</strong> → disengagement</div>
+            <div class="source">Learning analytics literature</div>
+          </div>
+        </div>
+
+        <div class="rootcause reveal-up d7">
+          <span class="tag">Root cause</span>
+          <p class="text">
+            Identical content + identical assessments + identical pacing — delivered to
+            <strong>every</strong> student, regardless of their level, history, or motivation.
+          </p>
+        </div>
+
+        <p class="closing reveal-up d8">
+          “Platforms are wide in reach but shallow in adaptability.”
+          <cite>— The structural failure of mass online learning</cite>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide1.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>02</strong> / 18</div>
+    <a href="Slide3.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

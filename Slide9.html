@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 9 · Adaptive Quiz · IRT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6a2fd6;
+    box-shadow: 0 0 12px rgba(106, 47, 214, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.9rem, 4.4vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.6rem;
+  }
+
+  /* ---------- Body grid ---------- */
+  .body {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 1.4rem;
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 1100px) { .body { grid-template-columns: 1fr; } }
+
+  /* IRT chart panel */
+  .chart-panel {
+    position: relative;
+    padding: 1.1rem 1.2rem 0.9rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    overflow: hidden;
+  }
+  .chart-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+  .chart-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink);
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.12), rgba(196, 181, 253, 0.08));
+    border: 1px dashed rgba(106, 47, 214, 0.35);
+    border-radius: 10px;
+    padding: 0.45rem 0.7rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .formula em {
+    color: var(--purple-500);
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  /* SVG chart */
+  .chart {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .chart-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(106, 47, 214, 0.12);
+  }
+  .legend {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .leg-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .leg-swatch {
+    width: 14px; height: 6px;
+    border-radius: 3px;
+  }
+  .leg-swatch.curve { background: linear-gradient(90deg, #6a2fd6, #a78bfa); }
+  .leg-swatch.zpd   { background: rgba(52, 211, 153, 0.45); border: 1px dashed #10a37f; }
+  .leg-swatch.theta { background: linear-gradient(90deg, #d12d6b, #f43f7a); }
+
+  /* Right column: variables + outcome */
+  .var-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .var {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
+  }
+  .var .sym {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 6px 14px rgba(75, 29, 153, 0.4);
+  }
+  .var .body-text { flex: 1; min-width: 0; }
+  .var .vname {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .var .vdesc {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    line-height: 1.45;
+  }
+  .var .vdesc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 5px;
+    background: rgba(106, 47, 214, 0.08);
+    border: 1px solid rgba(106, 47, 214, 0.16);
+    color: var(--ink);
+  }
+
+  /* ---------- Question ladder ---------- */
+  .ladder-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  @media (max-width: 1100px) { .ladder-row { grid-template-columns: 1fr; } }
+
+  .ladder {
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .ladder-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+  }
+  .ladder-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .theta-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    color: white;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 10px rgba(106, 47, 214, 0.4);
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.75);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.3s ease;
+  }
+  .item:hover { transform: translateX(3px); }
+  .item.right { border-left: 3px solid #10a37f; }
+  .item.wrong { border-left: 3px solid #d12d6b; }
+  .item.next  { border-left: 3px solid #6a2fd6; background: linear-gradient(135deg, rgba(167, 139, 250, 0.12), rgba(196, 181, 253, 0.06)); }
+
+  .item-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--purple-500);
+    letter-spacing: 0.04em;
+  }
+  .item-text {
+    font-size: 0.83rem;
+    color: var(--ink);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .item-text small {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .item-mark {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .item-mark.right { background: linear-gradient(135deg, #10a37f, #34d399); }
+  .item-mark.wrong { background: linear-gradient(135deg, #d12d6b, #f43f7a); }
+  .item-mark.next  {
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    animation: pulse-mark 1.6s ease-in-out infinite;
+  }
+  .item-mark svg { width: 14px; height: 14px; }
+  @keyframes pulse-mark {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.55); }
+    50%      { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+  }
+
+  .ladder-foot {
+    margin-top: 0.2rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(106, 47, 214, 0.25);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+  .ladder-foot strong { color: var(--ink); font-weight: 700; }
+
+  /* API mini-card */
+  .api {
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .api::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .api > * { position: relative; }
+  .api-head {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .api-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+  }
+  .api-row .verb { font-weight: 700; color: #ddd6fe; letter-spacing: 0.05em; }
+  .api-row .path { color: white; flex: 1; }
+  .api-row .dto {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.78);
+    padding: 0.18rem 0.45rem;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+  .api-foot {
+    font-size: 0.74rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.45;
+  }
+  .api-foot strong { color: white; font-weight: 700; }
+  .api-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .api-bullets li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.45;
+  }
+  .api-bullets li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #c4b5fd;
+    margin-top: 0.55rem;
+    box-shadow: 0 0 8px rgba(196, 181, 253, 0.7);
+  }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.84s; }
+  .slide.active .d8 { animation-delay: 0.96s; }
+  .slide.active .d9 { animation-delay: 1.10s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* SVG chart entrance */
+  .slide.active .chart .curve-path {
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: drawCurve 1.6s ease-out 0.6s forwards;
+  }
+  @keyframes drawCurve {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">09</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 9 — Adaptive Quiz · IRT -->
+    <section class="slide active" data-slide="9">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Adaptive Quiz · 08
+        </span>
+
+        <h1 class="reveal d2">Item Response Theory <span class="accent">Targets the Zone of Proximal Development</span></h1>
+
+        <p class="lead reveal d3">
+          A 1-parameter Rasch model estimates each learner's latent <strong>ability θ</strong> from
+          their answer history, and selects the next question whose <strong>difficulty b</strong>
+          falls inside the ZPD — the band where success probability sits between 0.5 and 0.75.
+        </p>
+
+        <div class="body">
+          <!-- LEFT: IRT chart panel -->
+          <div>
+            <div class="col-title reveal d4">1PL Rasch Model · Item Characteristic Curve</div>
+
+            <div class="chart-panel reveal-up d4">
+              <div class="chart-head">
+                <div class="chart-title">P(correct) given ability θ</div>
+                <div class="formula">P = 1 / (1 + e<em>^−(θ − b)</em>)</div>
+              </div>
+
+              <!-- SVG: Item Characteristic Curve with ZPD band -->
+              <svg class="chart" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" aria-label="Item characteristic curve">
+                <defs>
+                  <linearGradient id="curveGrad" x1="0" x2="1" y1="0" y2="0">
+                    <stop offset="0%"   stop-color="#4b1d99"/>
+                    <stop offset="50%"  stop-color="#6a2fd6"/>
+                    <stop offset="100%" stop-color="#a78bfa"/>
+                  </linearGradient>
+                  <linearGradient id="zpdGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%"   stop-color="rgba(52, 211, 153, 0.35)"/>
+                    <stop offset="100%" stop-color="rgba(52, 211, 153, 0.08)"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Grid -->
+                <g stroke="rgba(106, 47, 214, 0.12)" stroke-width="1">
+                  <line x1="60" y1="40"  x2="580" y2="40"/>
+                  <line x1="60" y1="100" x2="580" y2="100"/>
+                  <line x1="60" y1="160" x2="580" y2="160"/>
+                  <line x1="60" y1="220" x2="580" y2="220"/>
+                  <line x1="60"  y1="220" x2="60"  y2="40"/>
+                  <line x1="190" y1="220" x2="190" y2="40"/>
+                  <line x1="320" y1="220" x2="320" y2="40"/>
+                  <line x1="450" y1="220" x2="450" y2="40"/>
+                  <line x1="580" y1="220" x2="580" y2="40"/>
+                </g>
+
+                <!-- Y axis labels (probability) -->
+                <g font-family="JetBrains Mono, monospace" font-size="11" fill="#6a2fd6">
+                  <text x="50" y="44"  text-anchor="end">1.0</text>
+                  <text x="50" y="104" text-anchor="end">0.75</text>
+                  <text x="50" y="164" text-anchor="end">0.5</text>
+                  <text x="50" y="224" text-anchor="end">0.0</text>
+                </g>
+                <text x="20" y="135" font-family="Space Grotesk" font-size="11" font-weight="700" fill="#4b1d99" transform="rotate(-90 20 135)">P(correct)</text>
+
+                <!-- X axis labels (theta) -->
+                <g font-family="JetBrains Mono, monospace" font-size="11" fill="#6a2fd6">
+                  <text x="60"  y="240" text-anchor="middle">−3</text>
+                  <text x="190" y="240" text-anchor="middle">−1</text>
+                  <text x="320" y="240" text-anchor="middle">0</text>
+                  <text x="450" y="240" text-anchor="middle">+1</text>
+                  <text x="580" y="240" text-anchor="middle">+3</text>
+                </g>
+                <text x="320" y="265" font-family="Space Grotesk" font-size="11" font-weight="700" fill="#4b1d99" text-anchor="middle">ability θ  ·  difficulty b = 0</text>
+
+                <!-- ZPD band: P between 0.5 and 0.75 -->
+                <rect x="320" y="100" width="195" height="60" fill="url(#zpdGrad)" stroke="#10a37f" stroke-width="1.5" stroke-dasharray="5,4"/>
+                <text x="417" y="93" font-family="Space Grotesk" font-size="11" font-weight="700" fill="#10a37f" text-anchor="middle">ZPD · 0.5 ≤ P ≤ 0.75</text>
+
+                <!-- Sigmoid curve: 1 / (1 + e^-(theta - 0)), mapped from theta∈[-3,+3] to x∈[60,580], P∈[0,1] to y∈[220,40] -->
+                <path class="curve-path"
+                      d="M 60,217 C 110,215 150,210 190,196 C 230,180 270,150 320,130 C 370,110 410,82 450,68 C 490,58 540,46 580,43"
+                      fill="none"
+                      stroke="url(#curveGrad)"
+                      stroke-width="3.5"
+                      stroke-linecap="round"/>
+
+                <!-- Theta marker for current learner (~0.6) -->
+                <line x1="395" y1="40" x2="395" y2="220" stroke="#d12d6b" stroke-width="2" stroke-dasharray="4,4"/>
+                <circle cx="395" cy="118" r="6" fill="#d12d6b" stroke="white" stroke-width="2"/>
+                <text x="395" y="32" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#d12d6b" text-anchor="middle">θ = 0.6</text>
+              </svg>
+
+              <div class="chart-foot">
+                <div class="legend">
+                  <span class="leg-item"><span class="leg-swatch curve"></span> Item characteristic curve</span>
+                  <span class="leg-item"><span class="leg-swatch zpd"></span> ZPD target band</span>
+                  <span class="leg-item"><span class="leg-swatch theta"></span> Current learner θ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Variables -->
+          <div>
+            <div class="col-title reveal d5">Model Variables</div>
+            <div class="var-list">
+              <div class="var reveal-up d5">
+                <span class="sym">θ</span>
+                <div class="body-text">
+                  <div class="vname">Learner ability</div>
+                  <div class="vdesc">Latent skill estimate, updated after every answer using <code>maximum likelihood</code>.</div>
+                </div>
+              </div>
+              <div class="var reveal-up d6">
+                <span class="sym">b</span>
+                <div class="body-text">
+                  <div class="vname">Item difficulty</div>
+                  <div class="vdesc">Calibrated per question. Selected next item targets <code>P(correct) ∈ [0.5, 0.75]</code>.</div>
+                </div>
+              </div>
+              <div class="var reveal-up d7">
+                <span class="sym">P</span>
+                <div class="body-text">
+                  <div class="vname">Success probability</div>
+                  <div class="vdesc">Sigmoid output used to rank candidate items by ZPD-fit at request time.</div>
+                </div>
+              </div>
+              <div class="var reveal-up d8">
+                <span class="sym">σ</span>
+                <div class="body-text">
+                  <div class="vname">Stopping criterion</div>
+                  <div class="vdesc">Quiz ends when standard error of θ drops below threshold — fewer items, same precision.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question ladder + API row -->
+        <div class="ladder-row">
+          <div class="ladder reveal-up d8">
+            <div class="ladder-head">
+              <div class="ladder-title">Live Item Ladder · Backpropagation Quiz</div>
+              <span class="theta-pill">θ = 0.6</span>
+            </div>
+
+            <div class="item right">
+              <span class="item-num">Q1</span>
+              <span class="item-text">What does a gradient represent in a neural network?<small>b = −0.4 · easy</small></span>
+              <span class="item-mark right" aria-label="correct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </div>
+            <div class="item right">
+              <span class="item-num">Q2</span>
+              <span class="item-text">Why do we need a non-linear activation function?<small>b = +0.1 · medium</small></span>
+              <span class="item-mark right" aria-label="correct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </div>
+            <div class="item wrong">
+              <span class="item-num">Q3</span>
+              <span class="item-text">Compute ∂L/∂w for a 2-layer ReLU network<small>b = +1.4 · hard — outside ZPD</small></span>
+              <span class="item-mark wrong" aria-label="incorrect">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+            </div>
+            <div class="item next">
+              <span class="item-num">Q4</span>
+              <span class="item-text">Identify which weight grew most during one update step<small>b = +0.55 · re-targeted to ZPD</small></span>
+              <span class="item-mark next" aria-label="next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+
+            <p class="ladder-foot">
+              After Q3 was missed, θ was lowered slightly and the engine <strong>re-selected</strong>
+              an item closer to the learner's ability — keeping every question challenging but solvable.
+            </p>
+          </div>
+
+          <div class="api reveal-up d9">
+            <div class="api-head">AI Tier Endpoint</div>
+            <div class="api-row">
+              <span class="verb">POST</span>
+              <span class="path">/quiz</span>
+              <span class="dto">AiQuizRequestDto</span>
+            </div>
+            <ul class="api-bullets">
+              <li>Stateless inference — θ + answer history sent in the request body.</li>
+              <li>Returns the next item, updated θ, and standard error σ.</li>
+              <li>Item bank pre-calibrated; no ground-truth labels required at runtime.</li>
+              <li>Quiz terminates automatically when σ &lt; threshold.</li>
+            </ul>
+            <p class="api-foot">
+              Result: shorter quizzes, sharper ability estimates, and questions that always sit in
+              the learner's <strong>productive struggle zone</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide8.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>09</strong> / 18</div>
+    <a href="Slide10.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

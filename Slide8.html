@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 8 · Real-Time Prompt Injection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 5.5vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1380px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6a2fd6;
+    box-shadow: 0 0 12px rgba(106, 47, 214, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.85rem, 4.2vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.93rem, 1.18vw, 1.02rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.65rem;
+  }
+
+  /* ---------- Pipeline (6 steps) ---------- */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.55rem;
+    position: relative;
+  }
+  @media (max-width: 1100px) {
+    .pipeline { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .pipeline { grid-template-columns: 1fr; }
+  }
+
+  .pipeline::before {
+    content: "";
+    position: absolute;
+    top: 36px;
+    left: 5%;
+    right: 5%;
+    height: 2px;
+    background: linear-gradient(90deg,
+      rgba(106, 47, 214, 0) 0%,
+      rgba(106, 47, 214, 0.5) 10%,
+      rgba(167, 139, 250, 0.7) 50%,
+      rgba(106, 47, 214, 0.5) 90%,
+      rgba(106, 47, 214, 0) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .pipeline::after {
+    content: "";
+    position: absolute;
+    top: 32px;
+    left: -10%;
+    width: 12%;
+    height: 10px;
+    background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.9), transparent);
+    filter: blur(5px);
+    border-radius: 50%;
+    animation: flow 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes flow {
+    0%   { left: -10%; }
+    100% { left: 100%; }
+  }
+  @media (max-width: 1100px) {
+    .pipeline::before, .pipeline::after { display: none; }
+  }
+
+  .pstep {
+    position: relative;
+    z-index: 1;
+    padding: 0.85rem 0.8rem 0.95rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    min-height: 200px;
+  }
+  .pstep:hover {
+    transform: translateY(-5px);
+    border-color: rgba(139, 92, 246, 0.55);
+    box-shadow: 0 22px 50px -18px rgba(74, 29, 153, 0.32);
+  }
+
+  .pnum {
+    align-self: center;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 18px rgba(75, 29, 153, 0.45),
+                0 0 0 4px rgba(255,255,255,0.95);
+    margin-bottom: 0.1rem;
+  }
+  .picon {
+    align-self: center;
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: rgba(106, 47, 214, 0.08);
+    border: 1px solid rgba(106, 47, 214, 0.18);
+    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.1rem;
+  }
+  .picon svg { width: 16px; height: 16px; }
+  .ptitle {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .pdesc {
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .pcode {
+    margin-top: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    color: var(--purple-500);
+    background: rgba(106, 47, 214, 0.06);
+    border: 1px solid rgba(106, 47, 214, 0.16);
+    border-radius: 6px;
+    padding: 0.3rem 0.4rem;
+    letter-spacing: 0.02em;
+    word-break: break-all;
+  }
+
+  /* ---------- Prompt anatomy panel ---------- */
+  .anatomy-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 0.4rem;
+  }
+  @media (max-width: 1100px) { .anatomy-row { grid-template-columns: 1fr; } }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .swatch {
+    flex-shrink: 0;
+    width: 12px; height: 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .swatch.system   { background: linear-gradient(135deg, #4b1d99, #8b5cf6); }
+  .swatch.module   { background: linear-gradient(135deg, #6a2fd6, #a78bfa); }
+  .swatch.signals  { background: linear-gradient(135deg, #d12d6b, #f43f7a); }
+  .swatch.history  { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+  .swatch.user     { background: linear-gradient(135deg, #10a37f, #34d399); }
+
+  .legend-row .ltitle {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .legend-row .ldesc {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 0.1rem;
+    line-height: 1.4;
+  }
+  .legend-row code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 5px;
+    background: rgba(106, 47, 214, 0.08);
+    border: 1px solid rgba(106, 47, 214, 0.16);
+    color: var(--ink);
+  }
+
+  /* Code panel */
+  .prompt-panel {
+    position: relative;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #1a0033 0%, #2d0b5a 100%);
+    color: #ddd6fe;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.55), var(--shadow-glow);
+    overflow: hidden;
+  }
+  .prompt-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 200px at 0% 0%, rgba(167, 139, 250, 0.18), transparent 60%),
+      radial-gradient(400px 180px at 100% 100%, rgba(196, 181, 253, 0.12), transparent 60%);
+    pointer-events: none;
+  }
+
+  .prompt-head {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+  .prompt-head .dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+  .prompt-head .dots span {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+  }
+  .prompt-head .dots span:nth-child(1) { background: #f43f7a; }
+  .prompt-head .dots span:nth-child(2) { background: #fbbf24; }
+  .prompt-head .dots span:nth-child(3) { background: #34d399; }
+  .prompt-head .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(221, 214, 254, 0.85);
+    letter-spacing: 0.06em;
+  }
+
+  .prompt-body {
+    position: relative;
+    padding: 1rem 1.1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.65;
+    color: #ddd6fe;
+    overflow: auto;
+    max-height: 320px;
+  }
+  .prompt-body .line { display: block; }
+  .prompt-body .tag {
+    color: #a78bfa;
+    font-weight: 700;
+  }
+  .prompt-body .key {
+    color: #c4b5fd;
+  }
+  .prompt-body .val {
+    color: white;
+  }
+  .prompt-body .comment {
+    color: rgba(167, 139, 250, 0.55);
+    font-style: italic;
+  }
+
+  .seg {
+    display: block;
+    padding: 0.18rem 0.45rem;
+    margin: 0.1rem -0.45rem;
+    border-radius: 5px;
+    border-left: 3px solid transparent;
+    transition: background 0.3s ease;
+  }
+  .seg.system   { border-left-color: #8b5cf6; background: rgba(139, 92, 246, 0.10); }
+  .seg.module   { border-left-color: #a78bfa; background: rgba(167, 139, 250, 0.12); }
+  .seg.signals  { border-left-color: #f43f7a; background: rgba(244, 63, 122, 0.12); }
+  .seg.history  { border-left-color: #fbbf24; background: rgba(251, 191, 36, 0.10); }
+  .seg.user     { border-left-color: #34d399; background: rgba(52, 211, 153, 0.10); }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.42s; }
+  .slide.active .d5 { animation-delay: 0.50s; }
+  .slide.active .d6 { animation-delay: 0.58s; }
+  .slide.active .d7 { animation-delay: 0.66s; }
+  .slide.active .d8 { animation-delay: 0.74s; }
+  .slide.active .d9 { animation-delay: 0.82s; }
+  .slide.active .d10{ animation-delay: 0.95s; }
+  .slide.active .d11{ animation-delay: 1.08s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">08</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 8 — Real-Time Prompt Injection -->
+    <section class="slide active" data-slide="8">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Real-Time Prompt Injection · 07
+        </span>
+
+        <h1 class="reveal d2">From Raw Question to <span class="accent">Personalized Prompt — Live</span></h1>
+
+        <p class="lead reveal d3">
+          Each chat turn is intercepted by the backend, augmented with the learner's <strong>module
+          context</strong>, latest <strong>affective signals</strong>, and <strong>conversation
+          memory</strong>, then dispatched to the AI tier. Six stages, single round-trip — under 400 ms.
+        </p>
+
+        <!-- 6-step pipeline -->
+        <div>
+          <div class="col-title reveal d3">ChatOnModule Pipeline · 6 Stages</div>
+          <div class="pipeline">
+            <article class="pstep reveal-up d4">
+              <span class="pnum">1</span>
+              <span class="picon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <div class="ptitle">Capture</div>
+              <div class="pdesc">Question + active <code style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;">moduleId</code> from the player UI.</div>
+              <div class="pcode">ChatOnModule.tsx</div>
+            </article>
+
+            <article class="pstep reveal-up d5">
+              <span class="pnum">2</span>
+              <span class="picon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <div class="ptitle">Authenticate</div>
+              <div class="pdesc">JWT validated, role + enrollment resolved, audit row written.</div>
+              <div class="pcode">AIController.cs</div>
+            </article>
+
+            <article class="pstep reveal-up d6">
+              <span class="pnum">3</span>
+              <span class="picon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </span>
+              <div class="ptitle">Ground</div>
+              <div class="pdesc">Inject the relevant <code style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;">ModuleContent</code> slice as system context.</div>
+              <div class="pcode">AiModuleService.cs</div>
+            </article>
+
+            <article class="pstep reveal-up d7">
+              <span class="pnum">4</span>
+              <span class="picon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+              </span>
+              <div class="ptitle">Score Affect</div>
+              <div class="pdesc">Sentiment + emotion called on the question; results attached to the prompt.</div>
+              <div class="pcode">/sentiment · /emotion</div>
+            </article>
+
+            <article class="pstep reveal-up d8">
+              <span class="pnum">5</span>
+              <span class="picon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </span>
+              <div class="ptitle">Recall Memory</div>
+              <div class="pdesc">Last <strong>N turns</strong> for this learner pulled from persistent memory store.</div>
+              <div class="pcode">AiConversationMemoryService.cs</div>
+            </article>
+
+            <article class="pstep reveal-up d9">
+              <span class="pnum">6</span>
+              <span class="picon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </span>
+              <div class="ptitle">Dispatch</div>
+              <div class="pdesc">Composed prompt sent to AI tier; tokens streamed back over SSE.</div>
+              <div class="pcode">chatbot.py · :8001</div>
+            </article>
+          </div>
+        </div>
+
+        <!-- Anatomy row -->
+        <div class="anatomy-row">
+          <!-- Legend -->
+          <div>
+            <div class="col-title reveal d10">Prompt Anatomy · What Gets Injected</div>
+            <div class="legend">
+              <div class="legend-row reveal-up d10">
+                <span class="swatch system"></span>
+                <div>
+                  <div class="ltitle">System role</div>
+                  <div class="ldesc">Constrains tone, scope, and refusal policy. Built once per module.</div>
+                </div>
+              </div>
+              <div class="legend-row reveal-up d10">
+                <span class="swatch module"></span>
+                <div>
+                  <div class="ltitle">Module slice</div>
+                  <div class="ldesc">Active section of <code>ModuleContent</code> — grounds every answer.</div>
+                </div>
+              </div>
+              <div class="legend-row reveal-up d11">
+                <span class="swatch signals"></span>
+                <div>
+                  <div class="ltitle">Affective signals</div>
+                  <div class="ldesc">Latest sentiment + emotion score → tunes tone in real time.</div>
+                </div>
+              </div>
+              <div class="legend-row reveal-up d11">
+                <span class="swatch history"></span>
+                <div>
+                  <div class="ltitle">Conversation memory</div>
+                  <div class="ldesc">Last N turns — preserves context across sessions.</div>
+                </div>
+              </div>
+              <div class="legend-row reveal-up d11">
+                <span class="swatch user"></span>
+                <div>
+                  <div class="ltitle">User question</div>
+                  <div class="ldesc">The raw input — the only piece the student actually wrote.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt code panel -->
+          <div>
+            <div class="col-title reveal d10">Composed Prompt · Live Example</div>
+            <div class="prompt-panel reveal-up d11">
+              <div class="prompt-head">
+                <div class="dots"><span></span><span></span><span></span></div>
+                <span class="label">POST /ai/chat · prompt.json</span>
+                <span style="width: 32px;"></span>
+              </div>
+              <div class="prompt-body">
+<span class="seg system"><span class="tag">[system]</span> You are EduNova's tutor. Stay grounded in the provided module. Adapt tone to the learner's emotion. Refuse off-topic.</span>
+<span class="seg module"><span class="tag">[module]</span> <span class="key">id:</span> <span class="val">"nn-intro"</span>  <span class="key">section:</span> <span class="val">"3.2 Backpropagation"</span>
+        <span class="comment">// 412 tokens of authored content injected here</span></span>
+<span class="seg signals"><span class="tag">[signals]</span> <span class="key">sentiment:</span> <span class="val">-0.78</span>  <span class="key">emotion:</span> <span class="val">"frustrated"</span> <span class="key">conf:</span> <span class="val">0.91</span></span>
+<span class="seg history"><span class="tag">[history]</span> last 4 turns of this learner — restored from memory store</span>
+<span class="seg user"><span class="tag">[user]</span> "I've watched this 3 times and I still don't get backpropagation."</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide7.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>08</strong> / 18</div>
+    <a href="Slide9.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

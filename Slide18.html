@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduNova AI — Slide 18 · Thank You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --purple-800: #2d0b5a;
+            --purple-700: #4b1d99;
+            --purple-600: #6a2fd6;
+            --purple-500: #8b5cf6;
+            --purple-400: #a78bfa;
+            --purple-300: #c4b5fd;
+            --purple-200: #ddd6fe;
+            --purple-100: #ede9fe;
+            --purple-50: #f5f3ff;
+
+            --ink: #2d0b5a;
+            --ink-soft: #4b1d99;
+            --ink-mute: #6a2fd6;
+
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(106, 47, 214, 0.18);
+            --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+            --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--ink);
+            background: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ---------- Stage (locked theme background) ---------- */
+        .stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background:
+                radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+                radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+                linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+            pointer-events: none;
+            animation: float 14s ease-in-out infinite;
+        }
+
+        .orb.one {
+            width: 420px;
+            height: 420px;
+            background: #c4b5fd;
+            top: -120px;
+            left: -120px;
+        }
+
+        .orb.two {
+            width: 520px;
+            height: 520px;
+            background: #a78bfa;
+            bottom: -160px;
+            right: -160px;
+            animation-delay: -5s;
+            opacity: 0.45;
+        }
+
+        .orb.three {
+            width: 320px;
+            height: 320px;
+            background: #ddd6fe;
+            top: 40%;
+            left: 60%;
+            animation-delay: -9s;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -40px) scale(1.08);
+            }
+        }
+
+        .stage::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+            pointer-events: none;
+        }
+
+        /* ---------- Slide ---------- */
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6vh 6vw;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(40px);
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide-inner {
+            width: 100%;
+            max-width: 880px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 2rem;
+        }
+
+        /* ---------- Animated logo ---------- */
+        .logo-wrap {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* outer rotating ring */
+        .ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px dashed rgba(106, 47, 214, 0.35);
+            animation: spin 18s linear infinite;
+        }
+
+        .ring.inner {
+            inset: 22px;
+            border: 2px dashed rgba(167, 139, 250, 0.5);
+            animation: spin 12s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* pulsing halo */
+        .halo {
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.5) 0%, transparent 60%);
+            animation: halo-pulse 2.6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes halo-pulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.12);
+            }
+        }
+
+        /* core logo tile */
+        .logo-core {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            border-radius: 32px;
+            background: linear-gradient(135deg, #2d0b5a 0%, #4b1d99 50%, #8b5cf6 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow:
+                0 25px 60px -10px rgba(75, 29, 153, 0.55),
+                0 0 60px rgba(167, 139, 250, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            animation: logo-float 4s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        .logo-core::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 32px;
+            background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.35), transparent 55%);
+            pointer-events: none;
+        }
+
+        @keyframes logo-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* the "E" mark (using SVG for crisp rendering) */
+        .logo-mark {
+            width: 70px;
+            height: 70px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-mark svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* small orbiting dots */
+        .dot-orbit {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            animation: spin 8s linear infinite;
+            z-index: 1;
+        }
+
+        .dot-orbit::before,
+        .dot-orbit::after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+            box-shadow: 0 0 16px rgba(167, 139, 250, 0.9);
+        }
+
+        .dot-orbit::before {
+            top: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .dot-orbit::after {
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+        }
+
+        /* ---------- Text ---------- */
+        .thanks-title {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.035em;
+            background: linear-gradient(135deg, #2d0b5a 0%, #4b1d99 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .thanks-sub {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.05rem, 1.8vw, 1.4rem);
+            font-weight: 500;
+            color: var(--ink-soft);
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .thanks-sub .sep {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--purple-400);
+            box-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+        }
+
+        .brand-line {
+            margin-top: 0.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--ink-mute);
+        }
+
+        /* ---------- Entrance animations ---------- */
+        .slide.active .reveal-up {
+            animation: revealUp 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .slide.active .d1 {
+            animation-delay: 0.1s;
+        }
+
+        .slide.active .d2 {
+            animation-delay: 0.45s;
+        }
+
+        .slide.active .d3 {
+            animation-delay: 0.7s;
+        }
+
+        .slide.active .d4 {
+            animation-delay: 0.95s;
+        }
+
+        @keyframes revealUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+                filter: blur(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        /* ---------- Navigation (shared) ---------- */
+        .nav {
+            position: fixed;
+            bottom: 2.2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.55rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: var(--shadow-lg);
+            z-index: 50;
+        }
+
+        .nav button {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--ink);
+            cursor: pointer;
+            transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+        }
+
+        .nav button:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .nav button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .pos {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            letter-spacing: 0.08em;
+            padding: 0 0.5rem;
+        }
+
+        .pos strong {
+            color: var(--ink);
+        }
+
+        .counter {
+            position: fixed;
+            top: 1.6rem;
+            right: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            color: var(--ink-mute);
+            letter-spacing: 0.1em;
+            z-index: 50;
+        }
+
+        .counter strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        .brand {
+            position: fixed;
+            top: 1.6rem;
+            left: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            z-index: 50;
+        }
+
+        .brand .logo {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4b1d99, #a78bfa);
+            box-shadow: 0 6px 18px rgba(139, 92, 246, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stage">
+        <div class="orb one"></div>
+        <div class="orb two"></div>
+        <div class="orb three"></div>
+
+        <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+        <div class="counter"><strong>18</strong> / 18</div>
+
+        <!-- Slide 18 — Thank You -->
+        <section class="slide active" data-slide="18">
+            <div class="slide-inner">
+
+                <!-- Animated logo -->
+                <div class="logo-wrap reveal-up d1">
+                    <div class="halo"></div>
+                    <div class="ring"></div>
+                    <div class="ring inner"></div>
+                    <div class="dot-orbit"></div>
+                    <div class="logo-core">
+                        <div class="logo-mark" aria-hidden="true">
+                            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Stylized 'E' mark -->
+                                <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white"
+                                    opacity="0.95" />
+                                <!-- accent dot (the "Nova" spark) -->
+                                <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                                    <animate attributeName="opacity" values="1;0.4;1" dur="1.6s"
+                                        repeatCount="indefinite" />
+                                </circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thank You title -->
+                <h1 class="thanks-title reveal-up d2">Thank You</h1>
+
+                <!-- Multilingual subtitle -->
+                <div class="thanks-sub reveal-up d3">
+                    <span>شكراً لكم</span>
+                    <span class="sep"></span>
+                    <span>Merci</span>
+                </div>
+
+                <!-- Brand line -->
+                <div class="brand-line reveal-up d4">EduNova AI · 2026</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation (shared) -->
+    <nav class="nav" aria-label="Slide navigation">
+        <a href="Slide17.html" style="text-decoration: none;">
+            <button id="prev" aria-label="Previous slide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </button>
+        </a>
+        <div class="pos"><strong>18</strong> / 18</div>
+        <button id="next" aria-label="Next slide" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </button>
+    </nav>
+</body>
+
+</html>

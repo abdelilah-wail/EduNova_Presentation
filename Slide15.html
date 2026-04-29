@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 15 · Privacy-First</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+
+    --success: #10a37f;
+    --success-soft: #d1fae5;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 12px rgba(16, 163, 127, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.85rem, 4.2vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 980px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  /* ---------- Pillars ---------- */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+    align-items: stretch;
+    margin-top: 0.4rem;
+    position: relative;
+  }
+  @media (max-width: 1100px) { .pillars { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .pillars { grid-template-columns: 1fr; } }
+
+  .pillar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.05rem 1.05rem 0.9rem;
+    border-radius: 18px 18px 12px 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.45s ease,
+                box-shadow 0.45s ease;
+  }
+  .pillar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(360px 220px at 50% 0%, rgba(167, 139, 250, 0.22), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .pillar > * { position: relative; z-index: 1; }
+  .pillar:hover {
+    transform: translateY(-5px);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+
+  /* Capital (top of pillar) */
+  .capital {
+    margin: -0.3rem -0.3rem 0.8rem;
+    padding: 0.55rem;
+    border-radius: 14px 14px 8px 8px;
+    background: linear-gradient(180deg, rgba(167, 139, 250, 0.16), rgba(167, 139, 250, 0));
+    border-bottom: 1px dashed rgba(106, 47, 214, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .pillar-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 12px 28px -8px rgba(75, 29, 153, 0.55),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+    position: relative;
+  }
+  .pillar-icon::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 18px;
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    pointer-events: none;
+  }
+  .pillar-icon svg { width: 26px; height: 26px; }
+
+  .pillar-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--purple-500);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .pillar-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .pillar-desc {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-weight: 500;
+    margin-bottom: 0.7rem;
+    flex: 1;
+  }
+  .pillar-desc strong { color: var(--ink); font-weight: 700; }
+
+  /* Pillar refs */
+  .pillar-refs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.6rem;
+  }
+  .ref-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.16rem 0.45rem;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: var(--purple-100);
+    color: var(--ink-soft);
+    border: 1px solid rgba(106, 47, 214, 0.2);
+    letter-spacing: -0.005em;
+  }
+  .ref-chip::before {
+    content: "▸";
+    color: var(--purple-500);
+    font-size: 0.68rem;
+  }
+
+  /* Pillar base / GDPR badge */
+  .pillar-base {
+    margin: 0.3rem -1.05rem -0.9rem;
+    padding: 0.55rem 1.05rem;
+    background: linear-gradient(135deg, var(--success-soft), rgba(209, 250, 229, 0.5));
+    border-top: 1px solid rgba(16, 163, 127, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .pb-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--success);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .pb-label .check {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: var(--success);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.58rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .pb-art {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+
+  /* Connector floor under pillars */
+  .floor {
+    margin-top: 0.4rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .floor::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .floor > * { position: relative; }
+
+  .floor-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .floor-icon svg { width: 22px; height: 22px; }
+
+  .floor-text .ft-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .floor-text .ft-sub {
+    margin-top: 0.18rem;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.45;
+  }
+
+  .floor-stat {
+    text-align: right;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.18);
+  }
+  .floor-stat .fs-v {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .floor-stat .fs-l {
+    margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.78);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.82s; }
+  .slide.active .d8 { animation-delay: 1.05s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* Soft glow halo on icons */
+  .pillar-icon {
+    animation: icon-glow 3.6s ease-in-out infinite;
+  }
+  @keyframes icon-glow {
+    0%, 100% { box-shadow: 0 12px 28px -8px rgba(75, 29, 153, 0.55), inset 0 1px 0 rgba(255,255,255,0.25); }
+    50%      { box-shadow: 0 14px 32px -8px rgba(139, 92, 246, 0.7),  inset 0 1px 0 rgba(255,255,255,0.3); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">15</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 15 — Privacy-First (4 Pillars) -->
+    <section class="slide active" data-slide="15">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Privacy First · 14
+        </span>
+
+        <h1 class="reveal d2">Privacy by Design — Built on <span class="accent">Four Non-Negotiable Pillars</span></h1>
+
+        <p class="lead reveal d3">
+          Personalization at this depth only works if learners trust the system with their words and
+          emotions. Every signal we use is governed by four pillars covering <strong>what we collect</strong>,
+          <strong>where it runs</strong>, <strong>who can call it</strong>, and <strong>how learners reclaim it</strong>.
+        </p>
+
+        <div class="pillars">
+          <!-- Pillar 1: Data Minimization -->
+          <article class="pillar reveal-up d4">
+            <div class="capital">
+              <span class="pillar-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/>
+                  <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/>
+                </svg>
+              </span>
+              <span class="pillar-num">Pillar 01</span>
+            </div>
+            <h3 class="pillar-title">Data Minimization</h3>
+            <p class="pillar-desc">
+              Only the signals required for personalization are stored. Raw chat is held in a
+              <strong>bounded sliding window</strong>; sentiment and emotion are kept as
+              <strong>aggregated scores</strong>, never as labeled transcripts.
+            </p>
+            <div class="pillar-refs">
+              <span class="ref-chip">N = 12 turns</span>
+              <span class="ref-chip">aggregates only</span>
+            </div>
+            <div class="pillar-base">
+              <span class="pb-label"><span class="check">✓</span> Aligned</span>
+              <span class="pb-art">GDPR Art. 5(1)(c)</span>
+            </div>
+          </article>
+
+          <!-- Pillar 2: On-Premise AI -->
+          <article class="pillar reveal-up d5">
+            <div class="capital">
+              <span class="pillar-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="8" rx="2"/>
+                  <rect x="2" y="13" width="20" height="8" rx="2"/>
+                  <line x1="6" y1="7" x2="6.01" y2="7"/>
+                  <line x1="6" y1="17" x2="6.01" y2="17"/>
+                </svg>
+              </span>
+              <span class="pillar-num">Pillar 02</span>
+            </div>
+            <h3 class="pillar-title">On-Premise Affect AI</h3>
+            <p class="pillar-desc">
+              Sentiment and emotion models run <strong>locally on the institution's server</strong>.
+              Learner text never leaves the campus boundary for affect analysis — no third-party
+              cloud sees raw chat content.
+            </p>
+            <div class="pillar-refs">
+              <span class="ref-chip">FastAPI :8001</span>
+              <span class="ref-chip">DistilRoBERTa</span>
+            </div>
+            <div class="pillar-base">
+              <span class="pb-label"><span class="check">✓</span> Aligned</span>
+              <span class="pb-art">GDPR Art. 44</span>
+            </div>
+          </article>
+
+          <!-- Pillar 3: Strict Access Boundary -->
+          <article class="pillar reveal-up d6">
+            <div class="capital">
+              <span class="pillar-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <span class="pillar-num">Pillar 03</span>
+            </div>
+            <h3 class="pillar-title">Strict Access Boundary</h3>
+            <p class="pillar-desc">
+              The Python service is <strong>not exposed to the internet</strong>. All AI calls flow
+              through the .NET BFF, gated by <strong>JWT authentication</strong> and role checks
+              from <code style="font-family:'JetBrains Mono',monospace;font-size:0.86em">UserTypeEnum</code>.
+            </p>
+            <div class="pillar-refs">
+              <span class="ref-chip">JWT</span>
+              <span class="ref-chip">AIController.cs</span>
+              <span class="ref-chip">RBAC</span>
+            </div>
+            <div class="pillar-base">
+              <span class="pb-label"><span class="check">✓</span> Aligned</span>
+              <span class="pb-art">GDPR Art. 32</span>
+            </div>
+          </article>
+
+          <!-- Pillar 4: Right to Forget -->
+          <article class="pillar reveal-up d7">
+            <div class="capital">
+              <span class="pillar-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/>
+                  <path d="M14 11v6"/>
+                  <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </span>
+              <span class="pillar-num">Pillar 04</span>
+            </div>
+            <h3 class="pillar-title">Right to Forget</h3>
+            <p class="pillar-desc">
+              Learners can <strong>wipe their AI memory</strong> at any time — chat history, affect
+              aggregates, and θ estimates. Deletion is <strong>cascaded across services</strong> and
+              recorded in the audit log.
+            </p>
+            <div class="pillar-refs">
+              <span class="ref-chip">DELETE /ai/memory</span>
+              <span class="ref-chip">cascade</span>
+              <span class="ref-chip">audit</span>
+            </div>
+            <div class="pillar-base">
+              <span class="pb-label"><span class="check">✓</span> Aligned</span>
+              <span class="pb-art">GDPR Art. 17</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Compliance floor -->
+        <div class="floor reveal-up d8">
+          <span class="floor-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </span>
+          <div class="floor-text">
+            <div class="ft-title">GDPR-aligned by construction · FERPA-aware for educational data</div>
+            <div class="ft-sub">Privacy is not a setting toggled on after launch — every pillar is wired into the architecture, the API surface, and the data retention policy from day one.</div>
+          </div>
+          <div class="floor-stat">
+            <div class="fs-v">4 / 4</div>
+            <div class="fs-l">pillars enforced</div>
+          </div>
+          <div class="floor-stat">
+            <div class="fs-v">0</div>
+            <div class="fs-l">3rd-party data egress</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide14.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>15</strong> / 18</div>
+    <a href="Slide16.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

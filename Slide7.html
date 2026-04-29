@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 7 · Emotion & Sentiment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1340px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6a2fd6;
+    box-shadow: 0 0 12px rgba(106, 47, 214, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.9rem, 4.4vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  /* ---------- Emotion atlas ---------- */
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.7rem;
+  }
+
+  .atlas {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.7rem;
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 1100px) { .atlas { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .atlas { grid-template-columns: 1fr; } }
+
+  .emo {
+    position: relative;
+    padding: 1rem 0.9rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    min-height: 240px;
+  }
+  .emo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--emo-tint, rgba(167, 139, 250, 0.08));
+    pointer-events: none;
+    z-index: 0;
+  }
+  .emo > * { position: relative; z-index: 1; }
+  .emo:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 70px -20px rgba(74, 29, 153, 0.32);
+    border-color: rgba(139, 92, 246, 0.55);
+  }
+
+  .emo-face {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    background: var(--emo-grad, linear-gradient(135deg, #4b1d99, #8b5cf6));
+    color: white;
+    box-shadow: 0 10px 22px var(--emo-shadow, rgba(75, 29, 153, 0.4)),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .emo-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .emo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    color: var(--purple-500);
+    letter-spacing: 0.06em;
+    margin-top: 0.05rem;
+  }
+  .emo-bar {
+    margin-top: 0.15rem;
+    height: 6px;
+    width: 100%;
+    border-radius: 3px;
+    background: rgba(106, 47, 214, 0.1);
+    overflow: hidden;
+  }
+  .emo-bar > span {
+    display: block;
+    height: 100%;
+    width: var(--p, 50%);
+    background: var(--emo-grad, linear-gradient(90deg, #6a2fd6, #a78bfa));
+    border-radius: 3px;
+  }
+  .emo-action {
+    margin-top: auto;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .emo-action strong { color: var(--ink); font-weight: 700; }
+
+  /* Per-emotion palettes (still purple-family + 1 warning + 1 success accent) */
+  .emo.confused    { --emo-grad: linear-gradient(135deg, #f59e0b, #fbbf24); --emo-shadow: rgba(245, 158, 11, 0.4);  --emo-tint: rgba(251, 191, 36, 0.08); }
+  .emo.frustrated  { --emo-grad: linear-gradient(135deg, #d12d6b, #f43f7a); --emo-shadow: rgba(209, 45, 107, 0.4);  --emo-tint: rgba(244, 63, 122, 0.08); }
+  .emo.engaged     { --emo-grad: linear-gradient(135deg, #6a2fd6, #a78bfa); --emo-shadow: rgba(106, 47, 214, 0.45); --emo-tint: rgba(167, 139, 250, 0.10); }
+  .emo.confident   { --emo-grad: linear-gradient(135deg, #10a37f, #34d399); --emo-shadow: rgba(16, 163, 127, 0.4);  --emo-tint: rgba(52, 211, 153, 0.08); }
+  .emo.neutral     { --emo-grad: linear-gradient(135deg, #6b7280, #9ca3af); --emo-shadow: rgba(107, 114, 128, 0.35);--emo-tint: rgba(156, 163, 175, 0.08); }
+
+  /* ---------- Detection example & API row ---------- */
+  .row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.2rem;
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 1100px) { .row { grid-template-columns: 1fr; } }
+
+  /* Example block */
+  .example {
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .ex-stage {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .ex-bubble {
+    flex: 1;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4b1d99, #6a2fd6);
+    color: white;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    box-shadow: 0 6px 14px rgba(75, 29, 153, 0.3);
+    min-width: 0;
+  }
+  .ex-bubble small {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.06em;
+  }
+
+  .ex-arrow {
+    flex-shrink: 0;
+    width: 30px;
+    color: var(--purple-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ex-arrow svg { width: 22px; height: 22px; }
+
+  .ex-out {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .ex-out .row-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+  }
+  .ex-out .key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--purple-500);
+    letter-spacing: 0.04em;
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .ex-out .val {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .ex-out .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 10px rgba(106, 47, 214, 0.4);
+  }
+  .ex-out .pill.frustrated {
+    background: linear-gradient(135deg, #d12d6b, #f43f7a);
+    box-shadow: 0 4px 10px rgba(209, 45, 107, 0.4);
+  }
+  .ex-out .meter {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(106, 47, 214, 0.12);
+    overflow: hidden;
+  }
+  .ex-out .meter > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #d12d6b, #f59e0b);
+    border-radius: 3px;
+    width: 78%;
+  }
+  .ex-action {
+    margin-top: 0.2rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 9px;
+    background: rgba(106, 47, 214, 0.06);
+    border: 1px dashed rgba(106, 47, 214, 0.25);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .ex-action strong { color: var(--ink); font-weight: 700; }
+
+  /* API endpoints */
+  .api {
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(75, 29, 153, 0.96), rgba(139, 92, 246, 0.92));
+    color: white;
+    box-shadow: 0 22px 50px -18px rgba(75, 29, 153, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .api::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 180px at 0% 0%, rgba(255,255,255,0.18), transparent 60%),
+      radial-gradient(400px 150px at 100% 100%, rgba(255,255,255,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .api > * { position: relative; }
+
+  .api-head {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .api-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .api-row .verb {
+    font-weight: 700;
+    color: #ddd6fe;
+    letter-spacing: 0.05em;
+  }
+  .api-row .path { color: white; flex: 1; }
+  .api-row .dto {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.7);
+    padding: 0.18rem 0.45rem;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .api-foot {
+    font-size: 0.74rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.45;
+  }
+  .api-foot strong { color: white; font-weight: 700; }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.42s; }
+  .slide.active .d5 { animation-delay: 0.50s; }
+  .slide.active .d6 { animation-delay: 0.58s; }
+  .slide.active .d7 { animation-delay: 0.66s; }
+  .slide.active .d8 { animation-delay: 0.74s; }
+  .slide.active .d9 { animation-delay: 0.92s; }
+  .slide.active .d10{ animation-delay: 1.06s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">07</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 7 — Emotion & Sentiment Detection -->
+    <section class="slide active" data-slide="7">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Emotion & Sentiment · 06
+        </span>
+
+        <h1 class="reveal d2">Reading the <span class="accent">Affective Signal</span> Behind Every Message</h1>
+
+        <p class="lead reveal d3">
+          Every learner interaction — chat turns, free-text answers, support requests — is scored on
+          two NLP axes: a <strong>sentiment polarity</strong> (negative ↔ positive) and one of
+          <strong>five emotion labels</strong>. The output drives tone, pacing, and instructor alerts.
+        </p>
+
+        <!-- 5-emotion atlas -->
+        <div>
+          <div class="col-title reveal d4">Five Emotion Labels — and Their Consequences</div>
+
+          <div class="atlas">
+            <article class="emo confused reveal-up d4" style="--p: 64%;">
+              <span class="emo-face" aria-hidden="true">😕</span>
+              <div>
+                <div class="emo-name">Confused</div>
+                <div class="emo-label">label · confused</div>
+              </div>
+              <div class="emo-bar"><span></span></div>
+              <p class="emo-action"><strong>Auto-action:</strong> simplify next explanation, surface a worked example.</p>
+            </article>
+
+            <article class="emo frustrated reveal-up d5" style="--p: 78%;">
+              <span class="emo-face" aria-hidden="true">😤</span>
+              <div>
+                <div class="emo-name">Frustrated</div>
+                <div class="emo-label">label · frustrated</div>
+              </div>
+              <div class="emo-bar"><span></span></div>
+              <p class="emo-action"><strong>Auto-action:</strong> soften tone, offer a break, alert instructor if recurrent.</p>
+            </article>
+
+            <article class="emo engaged reveal-up d6" style="--p: 88%;">
+              <span class="emo-face" aria-hidden="true">🔥</span>
+              <div>
+                <div class="emo-name">Engaged</div>
+                <div class="emo-label">label · engaged</div>
+              </div>
+              <div class="emo-bar"><span></span></div>
+              <p class="emo-action"><strong>Auto-action:</strong> raise IRT difficulty, unlock stretch material.</p>
+            </article>
+
+            <article class="emo confident reveal-up d7" style="--p: 82%;">
+              <span class="emo-face" aria-hidden="true">💪</span>
+              <div>
+                <div class="emo-name">Confident</div>
+                <div class="emo-label">label · confident</div>
+              </div>
+              <div class="emo-bar"><span></span></div>
+              <p class="emo-action"><strong>Auto-action:</strong> challenge with reasoning questions, skip review.</p>
+            </article>
+
+            <article class="emo neutral reveal-up d8" style="--p: 50%;">
+              <span class="emo-face" aria-hidden="true">😐</span>
+              <div>
+                <div class="emo-name">Neutral</div>
+                <div class="emo-label">label · neutral</div>
+              </div>
+              <div class="emo-bar"><span></span></div>
+              <p class="emo-action"><strong>Auto-action:</strong> stay on the planned path, no tone adjustment.</p>
+            </article>
+          </div>
+        </div>
+
+        <!-- Example detection + API row -->
+        <div class="row">
+          <div class="example reveal-up d9">
+            <div class="ex-stage">
+              <div class="ex-bubble">
+                <small>STUDENT MESSAGE</small>
+                "I've watched this 3 times and I still don't get backpropagation."
+              </div>
+              <div class="ex-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+              </div>
+              <div class="ex-out">
+                <div class="row-line">
+                  <span class="key">sentiment</span>
+                  <div class="meter"><span></span></div>
+                  <span class="val">−0.78</span>
+                </div>
+                <div class="row-line">
+                  <span class="key">emotion</span>
+                  <span class="pill frustrated">😤 Frustrated · 0.91</span>
+                </div>
+                <div class="ex-action">
+                  <strong>Action:</strong> simplify next module step, lower quiz difficulty, queue instructor alert if pattern persists for 2 more turns.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="api reveal-up d10">
+            <div class="api-head">AI Tier Endpoints</div>
+            <div class="api-row">
+              <span class="verb">POST</span>
+              <span class="path">/sentiment</span>
+              <span class="dto">AiSentimentRequestDto</span>
+            </div>
+            <div class="api-row">
+              <span class="verb">POST</span>
+              <span class="path">/emotion</span>
+              <span class="dto">AiEmotionRequestDto</span>
+            </div>
+            <p class="api-foot">
+              Hosted on FastAPI <strong>:8001</strong>. Latency budget under <strong>180 ms P95</strong>.
+              Results are persisted by <strong>AiMonitoringService</strong> for downstream dropout-risk scoring.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide6.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>07</strong> / 18</div>
+    <a href="Slide8.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>

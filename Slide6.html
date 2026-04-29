@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduNova AI — Slide 6 · Intelligent Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Base ---------- */
+  *,
+  *::before,
+  *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-900: #1a0033;
+    --purple-800: #2d0b5a;
+    --purple-700: #4b1d99;
+    --purple-600: #6a2fd6;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50:  #f5f3ff;
+
+    --ink:        #2d0b5a;
+    --ink-soft:   #4b1d99;
+    --ink-mute:   #6a2fd6;
+
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(106, 47, 214, 0.18);
+    --shadow-lg: 0 25px 60px -20px rgba(74, 29, 153, 0.25);
+    --shadow-sm: 0 8px 24px -8px rgba(74, 29, 153, 0.18);
+    --shadow-glow: 0 0 80px rgba(167, 139, 250, 0.35);
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 800px at 15% 20%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(900px 700px at 85% 80%, rgba(221, 214, 254, 0.7), transparent 65%),
+      linear-gradient(135deg, #ffffff 0%, #f5f3ff 35%, #ede9fe 70%, #ddd6fe 100%);
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    pointer-events: none;
+    animation: float 14s ease-in-out infinite;
+  }
+  .orb.one   { width: 420px; height: 420px; background: #c4b5fd; top: -120px; left: -120px; }
+  .orb.two   { width: 520px; height: 520px; background: #a78bfa; bottom: -160px; right: -160px; animation-delay: -5s; opacity: 0.45; }
+  .orb.three { width: 320px; height: 320px; background: #ddd6fe; top: 40%; left: 60%; animation-delay: -9s; opacity: 0.7; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(106, 47, 214, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(106, 47, 214, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    pointer-events: none;
+  }
+
+  /* ---------- Slide ---------- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5vh 6vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6a2fd6;
+    box-shadow: 0 0 12px rgba(106, 47, 214, 0.7);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: clamp(1.9rem, 4.4vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #2d0b5a 0%, #4b1d99 60%, #6a2fd6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 920px;
+    font-weight: 400;
+  }
+  .lead strong { color: var(--ink); font-weight: 700; }
+
+  /* Two-column body */
+  .body {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.4rem;
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 1080px) {
+    .body { grid-template-columns: 1fr; }
+  }
+
+  .col-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-500);
+    margin-bottom: 0.7rem;
+  }
+
+  /* ---------- Flow diagram (left) ---------- */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.4s ease;
+  }
+  .step:hover { transform: translateX(4px); }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    box-shadow: 0 6px 14px rgba(75, 29, 153, 0.4);
+  }
+  .step-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .step-desc {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 0.1rem;
+    line-height: 1.4;
+  }
+  .step-desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 5px;
+    background: rgba(106, 47, 214, 0.08);
+    border: 1px solid rgba(106, 47, 214, 0.16);
+    color: var(--ink);
+  }
+
+  /* Vertical connector between steps */
+  .connector {
+    width: 2px;
+    height: 14px;
+    margin-left: 16px;
+    background: linear-gradient(180deg, #6a2fd6, transparent);
+    border-radius: 2px;
+    position: relative;
+  }
+  .connector::after {
+    content: "";
+    position: absolute;
+    left: -3px;
+    top: 0;
+    width: 8px; height: 8px;
+    background: rgba(167, 139, 250, 0.7);
+    border-radius: 50%;
+    filter: blur(2px);
+    animation: drip 2.2s ease-in-out infinite;
+  }
+  @keyframes drip {
+    0%   { top: -4px; opacity: 0; }
+    50%  { opacity: 1; }
+    100% { top: 16px; opacity: 0; }
+  }
+
+  /* ---------- Chat mock (right) ---------- */
+  .chat {
+    position: relative;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245, 243, 255, 0.85));
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .chat-head {
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid rgba(106, 47, 214, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.6);
+  }
+  .chat-head .left {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .chat-bubble-icon {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4b1d99, #8b5cf6);
+    color: white;
+    box-shadow: 0 6px 14px rgba(75, 29, 153, 0.4);
+  }
+  .chat-bubble-icon svg { width: 16px; height: 16px; }
+  .chat-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .chat-context {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--purple-500);
+    margin-top: 0.05rem;
+    letter-spacing: 0.04em;
+  }
+  .chat-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #10a37f;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .chat-status .live {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #10a37f;
+    box-shadow: 0 0 10px rgba(16,163,127,0.7);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  .chat-body {
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    flex: 1;
+  }
+  .msg {
+    max-width: 85%;
+    padding: 0.7rem 0.95rem;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #4b1d99, #6a2fd6);
+    color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 6px 14px rgba(75, 29, 153, 0.3);
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.85);
+    color: var(--ink);
+    border: 1px solid var(--glass-border);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.bot strong { color: var(--ink); font-weight: 700; }
+  .msg .src {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(106, 47, 214, 0.2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--purple-500);
+    letter-spacing: 0.04em;
+  }
+  .msg .src::before {
+    content: "↳ grounded in: ";
+    color: var(--ink-mute);
+  }
+
+  .typing {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--glass-border);
+  }
+  .typing span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50%      { opacity: 1; transform: translateY(-2px); }
+  }
+
+  .chat-foot {
+    padding: 0.6rem 1.1rem;
+    border-top: 1px solid rgba(106, 47, 214, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-mute);
+    background: rgba(255,255,255,0.5);
+    letter-spacing: 0.04em;
+  }
+  .chat-foot .pill {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(106, 47, 214, 0.08);
+    border: 1px solid rgba(106, 47, 214, 0.18);
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  /* ---------- Guarantees band ---------- */
+  .guarantees {
+    margin-top: 0.4rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+  }
+  @media (max-width: 900px) { .guarantees { grid-template-columns: 1fr; } }
+
+  .gua {
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .gua .ic {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(106, 47, 214, 0.35);
+  }
+  .gua .ic svg { width: 18px; height: 18px; }
+  .gua .t {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .gua .d {
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+
+  /* ---------- Entrance animations ---------- */
+  .slide.active .reveal      { animation: reveal   0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .slide.active .reveal-up   { animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  .slide.active .d1 { animation-delay: 0.05s; }
+  .slide.active .d2 { animation-delay: 0.18s; }
+  .slide.active .d3 { animation-delay: 0.32s; }
+  .slide.active .d4 { animation-delay: 0.46s; }
+  .slide.active .d5 { animation-delay: 0.58s; }
+  .slide.active .d6 { animation-delay: 0.70s; }
+  .slide.active .d7 { animation-delay: 0.82s; }
+  .slide.active .d8 { animation-delay: 0.96s; }
+  .slide.active .d9 { animation-delay: 1.10s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateX(-24px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+  }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* ---------- Navigation (shared) ---------- */
+  .nav {
+    position: fixed;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .nav button {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6a2fd6, #a78bfa);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+  }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  .pos {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem;
+  }
+  .pos strong { color: var(--ink); }
+
+  .counter {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    z-index: 50;
+  }
+  .counter strong { color: var(--ink); font-weight: 700; }
+
+  .brand {
+    position: fixed;
+    top: 1.6rem;
+    left: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 50;
+  }
+  .brand .logo {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b1d99, #a78bfa);
+    box-shadow: 0 6px 18px rgba(139,92,246,0.5);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="brand">
+            <!-- <span class="logo"></span> -->
+            <div class="logo" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized 'E' mark -->
+                    <path d="M14 14 H50 V22 H22 V28 H44 V36 H22 V42 H50 V50 H14 Z" fill="white" opacity="0.95" />
+                    <!-- accent dot (the "Nova" spark) -->
+                    <circle cx="50" cy="14" r="4" fill="#c4b5fd">
+                        <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            <span>EduNova AI</span>
+        </div>
+    <div class="counter"><strong id="current">06</strong> / <span id="total">18</span></div>
+
+    <!-- Slide 6 — Intelligent Assistant -->
+    <section class="slide active" data-slide="6">
+      <div class="slide-inner">
+        <span class="eyebrow reveal d1">
+          <span class="dot"></span> Intelligent Assistant · 05
+        </span>
+
+        <h1 class="reveal d2">A Module-Aware Chatbot, <span class="accent">Grounded in the Course</span></h1>
+
+        <p class="lead reveal d3">
+          Generic LLMs hallucinate. EduNova's assistant is constrained to the <strong>current module's
+          content</strong>, retains <strong>conversation memory</strong> per student, and streams
+          responses token-by-token over Server-Sent Events.
+        </p>
+
+        <div class="body">
+          <!-- LEFT: Request flow -->
+          <div>
+            <div class="col-title reveal d4">Request Flow · Student → Answer</div>
+
+            <div class="flow">
+              <div class="step reveal-up d4">
+                <span class="step-num">1</span>
+                <div>
+                  <div class="step-title">Student types a question</div>
+                  <div class="step-desc">Captured in <code>ChatOnModule.tsx</code> with current <code>moduleId</code></div>
+                </div>
+              </div>
+              <div class="connector"></div>
+
+              <div class="step reveal-up d5">
+                <span class="step-num">2</span>
+                <div>
+                  <div class="step-title">Backend builds a grounded prompt</div>
+                  <div class="step-desc"><code>AIController</code> + <code>AiService</code> inject <code>ModuleContent</code> + memory</div>
+                </div>
+              </div>
+              <div class="connector"></div>
+
+              <div class="step reveal-up d6">
+                <span class="step-num">3</span>
+                <div>
+                  <div class="step-title">Memory is loaded per student</div>
+                  <div class="step-desc"><code>AiConversationMemoryService</code> retrieves prior turns</div>
+                </div>
+              </div>
+              <div class="connector"></div>
+
+              <div class="step reveal-up d7">
+                <span class="step-num">4</span>
+                <div>
+                  <div class="step-title">AI tier generates a response</div>
+                  <div class="step-desc"><code>chatbot.py</code> → constrained completion on FastAPI <code>:8001</code></div>
+                </div>
+              </div>
+              <div class="connector"></div>
+
+              <div class="step reveal-up d8">
+                <span class="step-num">5</span>
+                <div>
+                  <div class="step-title">Tokens streamed back to UI</div>
+                  <div class="step-desc">SSE channel — student sees the answer typed live</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Mock chat -->
+          <div>
+            <div class="col-title reveal d4">Live Example · Module Context</div>
+
+            <div class="chat reveal-up d6">
+              <div class="chat-head">
+                <div class="left">
+                  <span class="chat-bubble-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <div class="chat-title">EduNova Assistant</div>
+                    <div class="chat-context">module · Intro to Neural Networks</div>
+                  </div>
+                </div>
+                <span class="chat-status"><span class="live"></span> Live</span>
+              </div>
+
+              <div class="chat-body">
+                <div class="msg user">Why does my model overfit when I add more layers?</div>
+
+                <div class="msg bot">
+                  Good question — and it ties directly to <strong>section 3.2</strong> of this module. Adding depth
+                  increases capacity, so without enough data or regularization the network memorizes the
+                  training set instead of generalizing.
+                  <br><br>
+                  Three things help: <strong>dropout</strong>, <strong>weight decay</strong>, and <strong>early stopping</strong>
+                  — all covered in the next quiz.
+                  <div class="src">ModuleContent #3.2 · Conversation memory · 4 prior turns</div>
+                </div>
+
+                <div class="typing" aria-label="Generating">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="chat-foot">
+                <span>POST /ai/chat</span>
+                <span class="pill">SSE · streaming</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guarantees -->
+        <div class="guarantees">
+          <div class="gua reveal-up d7">
+            <span class="ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </span>
+            <div>
+              <div class="t">Module-grounded</div>
+              <div class="d">Answers constrained to current <code style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">ModuleContent</code></div>
+            </div>
+          </div>
+          <div class="gua reveal-up d8">
+            <span class="ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </span>
+            <div>
+              <div class="t">Conversation memory</div>
+              <div class="d">Per-student turn history persisted between sessions</div>
+            </div>
+          </div>
+          <div class="gua reveal-up d9">
+            <span class="ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </span>
+            <div>
+              <div class="t">Token streaming</div>
+              <div class="d">SSE delivery — first token in &lt; 400 ms</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <nav class="nav" aria-label="Slide navigation">
+    <a href="Slide5.html" style="text-decoration: none;">
+      <button id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </a>
+    <div class="pos"><strong>06</strong> / 18</div>
+    <a href="Slide7.html" style="text-decoration: none;">
+      <button id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </a>
+  </nav>
+</body>
+</html>
