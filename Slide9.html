@@ -560,8 +560,7 @@
   .nav {
     position: fixed;
     bottom: 2.2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 2.2rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -665,7 +664,7 @@
     <section class="slide active" data-slide="9">
       <div class="slide-inner">
         <span class="eyebrow reveal d1">
-          <span class="dot"></span> Adaptive Quiz · 08
+          <span class="dot"></span> Adaptive Quiz · 09
         </span>
 
         <h1 class="reveal d2">Item Response Theory <span class="accent">Targets the Zone of Proximal Development</span></h1>
@@ -797,68 +796,7 @@
           </div>
         </div>
 
-        <!-- Question ladder + API row -->
-        <div class="ladder-row">
-          <div class="ladder reveal-up d8">
-            <div class="ladder-head">
-              <div class="ladder-title">Live Item Ladder · Backpropagation Quiz</div>
-              <span class="theta-pill">θ = 0.6</span>
-            </div>
 
-            <div class="item right">
-              <span class="item-num">Q1</span>
-              <span class="item-text">What does a gradient represent in a neural network?<small>b = −0.4 · easy</small></span>
-              <span class="item-mark right" aria-label="correct">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
-            </div>
-            <div class="item right">
-              <span class="item-num">Q2</span>
-              <span class="item-text">Why do we need a non-linear activation function?<small>b = +0.1 · medium</small></span>
-              <span class="item-mark right" aria-label="correct">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
-            </div>
-            <div class="item wrong">
-              <span class="item-num">Q3</span>
-              <span class="item-text">Compute ∂L/∂w for a 2-layer ReLU network<small>b = +1.4 · hard — outside ZPD</small></span>
-              <span class="item-mark wrong" aria-label="incorrect">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </span>
-            </div>
-            <div class="item next">
-              <span class="item-num">Q4</span>
-              <span class="item-text">Identify which weight grew most during one update step<small>b = +0.55 · re-targeted to ZPD</small></span>
-              <span class="item-mark next" aria-label="next">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </span>
-            </div>
-
-            <p class="ladder-foot">
-              After Q3 was missed, θ was lowered slightly and the engine <strong>re-selected</strong>
-              an item closer to the learner's ability — keeping every question challenging but solvable.
-            </p>
-          </div>
-
-          <div class="api reveal-up d9">
-            <div class="api-head">AI Tier Endpoint</div>
-            <div class="api-row">
-              <span class="verb">POST</span>
-              <span class="path">/quiz</span>
-              <span class="dto">AiQuizRequestDto</span>
-            </div>
-            <ul class="api-bullets">
-              <li>Stateless inference — θ + answer history sent in the request body.</li>
-              <li>Returns the next item, updated θ, and standard error σ.</li>
-              <li>Item bank pre-calibrated; no ground-truth labels required at runtime.</li>
-              <li>Quiz terminates automatically when σ &lt; threshold.</li>
-            </ul>
-            <p class="api-foot">
-              Result: shorter quizzes, sharper ability estimates, and questions that always sit in
-              the learner's <strong>productive struggle zone</strong>.
-            </p>
-          </div>
-        </div>
       </div>
     </section>
   </div>

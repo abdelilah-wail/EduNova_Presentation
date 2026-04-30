@@ -312,23 +312,22 @@
   /* ---------- Prompt anatomy panel ---------- */
   .anatomy-row {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1.2rem;
     margin-top: 0.4rem;
   }
   @media (max-width: 1100px) { .anatomy-row { grid-template-columns: 1fr; } }
 
   .legend {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 0.55rem;
   }
   .legend-row {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    padding: 0.85rem 0.8rem;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem;
     border-radius: 12px;
     background: rgba(255,255,255,0.78);
     border: 1px solid var(--glass-border);
@@ -589,7 +588,7 @@
     <section class="slide active" data-slide="8">
       <div class="slide-inner">
         <span class="eyebrow reveal d1">
-          <span class="dot"></span> Real-Time Prompt Injection · 08
+          <span class="dot"></span> Real-Time Prompt Injection · 07
         </span>
 
         <h1 class="reveal d2">From Raw Question to <span class="accent">Personalized Prompt — Live</span></h1>
@@ -706,6 +705,26 @@
                   <div class="ltitle">User question</div>
                   <div class="ldesc">The raw input — the only piece the student actually wrote.</div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt code panel -->
+          <div>
+            <div class="col-title reveal d10">Composed Prompt · Live Example</div>
+            <div class="prompt-panel reveal-up d11">
+              <div class="prompt-head">
+                <div class="dots"><span></span><span></span><span></span></div>
+                <span class="label">POST /ai/chat · prompt.json</span>
+                <span style="width: 32px;"></span>
+              </div>
+              <div class="prompt-body">
+<span class="seg system"><span class="tag">[system]</span> You are EduNova's tutor. Stay grounded in the provided module. Adapt tone to the learner's emotion. Refuse off-topic.</span>
+<span class="seg module"><span class="tag">[module]</span> <span class="key">id:</span> <span class="val">"nn-intro"</span>  <span class="key">section:</span> <span class="val">"3.2 Backpropagation"</span>
+        <span class="comment">// 412 tokens of authored content injected here</span></span>
+<span class="seg signals"><span class="tag">[signals]</span> <span class="key">sentiment:</span> <span class="val">-0.78</span>  <span class="key">emotion:</span> <span class="val">"frustrated"</span> <span class="key">conf:</span> <span class="val">0.91</span></span>
+<span class="seg history"><span class="tag">[history]</span> last 4 turns of this learner — restored from memory store</span>
+<span class="seg user"><span class="tag">[user]</span> "I've watched this 3 times and I still don't get backpropagation."</span>
               </div>
             </div>
           </div>
